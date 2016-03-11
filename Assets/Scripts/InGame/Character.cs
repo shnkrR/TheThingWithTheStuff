@@ -5,9 +5,29 @@ public class Character : MonoBase
 {
     public Animator _Animator;
 
-    void Update()
+
+    private void Start()
     {
-        HandleInputs();
+        _OnSwiped += OnSwipe;
+        _OnTouchesDetected += OnTouch;
+    }
+
+    private void OnDestroy()
+    {
+        _OnSwiped -= OnSwipe;
+        _OnTouchesDetected -= OnTouch;
+    }
+
+    protected override void Update()
+    {
+        base.Update();
+
+        //if (!GameManager.pInstance.IsMobile())
+            HandleInputs();
+        //else
+        {
+
+        }
     }
 	
 	void HandleInputs () 
@@ -42,4 +62,13 @@ public class Character : MonoBase
             _Animator.SetFloat("Forward", 0.0f);
         }
 	}
+
+    void OnTouch(Touch[] a_Touches)
+    {
+    }
+
+    void OnSwipe(Swipe a_Swipe)
+    {
+        Debug.Log("Swipe Direction: " + a_Swipe.p_SwipeDirection.ToString() + " Swipe Start: " + a_Swipe.p_StartPosition + " Swipe End: " + a_Swipe.p_EndPosition);
+    }
 }

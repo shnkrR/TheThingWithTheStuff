@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class Startup : MonoBehaviour 
+public class Startup : MonoBase 
 {
 	public float _StartupTime = 2.0f;
 

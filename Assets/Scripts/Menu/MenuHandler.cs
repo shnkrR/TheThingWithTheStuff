@@ -15,7 +15,7 @@ public class MenuScreen
     public int pScreenIndex { set { mScreenIndex = value; } get { return mScreenIndex; } }
 }
 
-public class MenuHandler : MonoBehaviour 
+public class MenuHandler : MonoBase 
 {
     public MenuScreen[] _MenuScreens;
 
@@ -35,8 +35,9 @@ public class MenuHandler : MonoBehaviour
         GoToScreen(0);
     }
 
-	private void Update()
+    protected override void Update()
 	{
+        base.Update();
 	}
 
     private void OnEnable()

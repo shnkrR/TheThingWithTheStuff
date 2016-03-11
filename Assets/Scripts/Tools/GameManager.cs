@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class GameManager : MonoBehaviour 
+public class GameManager : MonoBase 
 {
 	//
 	public enum GameState
@@ -58,8 +58,10 @@ public class GameManager : MonoBehaviour
 		mGameState = GameState.START;        
 	}
 
-	private void Update()
+	protected override void Update()
 	{
+        base.Update();
+
 		if (Input.GetKeyDown (KeyCode.Escape))
         {
 			if (pBackEvent != null)

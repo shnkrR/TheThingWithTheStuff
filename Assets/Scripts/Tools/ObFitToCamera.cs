@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class ObFitToCamera : MonoBehaviour 
+public class ObFitToCamera : MonoBase 
 {
 	public Vector3 _ScaleOffset;
 

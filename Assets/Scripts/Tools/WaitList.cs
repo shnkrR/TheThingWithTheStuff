@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 
-public class WaitList : MonoBehaviour
+public class WaitList : MonoBase
 {
     public System.Action OnWaitListComplete;
 

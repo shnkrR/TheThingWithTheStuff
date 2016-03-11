@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class Transition : MonoBehaviour 
+public class Transition : MonoBase 
 {
     private static Transition mInstance;
     public static Transition pInstance { get { return mInstance; } }
