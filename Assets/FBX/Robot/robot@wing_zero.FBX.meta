@@ -1,0 +1,261 @@
+fileFormatVersion: 2
+guid: 85f584b23e2e3ec46b6492a65c2d1848
+timeCreated: 1458113051
+licenseType: Pro
+ModelImporter:
+  serializedVersion: 18
+  fileIDToRecycleName:
+    100000: gun
+    100002: Head
+    100004: L_ForeArm
+    100006: L_Hand
+    100008: L_Heel
+    100010: L_Shin
+    100012: L_Shoulder
+    100014: L_Thigh
+    100016: L_Thruster
+    100018: L_Toe
+    100020: L_UpperArm
+    100022: L_Wing-1
+    100024: L_Wing-2
+    100026: Neck
+    100028: Pelvis
+    100030: R_ForeArm
+    100032: R_Hand
+    100034: R_Heel
+    100036: R_Shin
+    100038: R_Shoulder
+    100040: R_Thigh
+    100042: R_Thruster
+    100044: R_Toe
+    100046: R_UpperArm
+    100048: R_Wing-1
+    100050: R_Wing-2
+    100052: Robot
+    100054: Robot Head
+    100056: Robot L Calf
+    100058: Robot L Clavicle
+    100060: Robot L Foot
+    100062: Robot L Forearm
+    100064: Robot L Hand
+    100066: Robot L Thigh
+    100068: Robot L Toe0
+    100070: Robot L UpperArm
+    100072: Robot L_Thruster
+    100074: Robot Neck
+    100076: Robot Pelvis
+    100078: Robot R Calf
+    100080: Robot R Clavicle
+    100082: Robot R Foot
+    100084: Robot R Forearm
+    100086: Robot R Hand
+    100088: Robot R Thigh
+    100090: Robot R Toe0
+    100092: Robot R UpperArm
+    100094: Robot R_Thruster
+    100096: Robot Spine
+    100098: //RootNode
+    100100: Shield
+    100102: Torso
+    400000: gun
+    400002: Head
+    400004: L_ForeArm
+    400006: L_Hand
+    400008: L_Heel
+    400010: L_Shin
+    400012: L_Shoulder
+    400014: L_Thigh
+    400016: L_Thruster
+    400018: L_Toe
+    400020: L_UpperArm
+    400022: L_Wing-1
+    400024: L_Wing-2
+    400026: Neck
+    400028: Pelvis
+    400030: R_ForeArm
+    400032: R_Hand
+    400034: R_Heel
+    400036: R_Shin
+    400038: R_Shoulder
+    400040: R_Thigh
+    400042: R_Thruster
+    400044: R_Toe
+    400046: R_UpperArm
+    400048: R_Wing-1
+    400050: R_Wing-2
+    400052: Robot
+    400054: Robot Head
+    400056: Robot L Calf
+    400058: Robot L Clavicle
+    400060: Robot L Foot
+    400062: Robot L Forearm
+    400064: Robot L Hand
+    400066: Robot L Thigh
+    400068: Robot L Toe0
+    400070: Robot L UpperArm
+    400072: Robot L_Thruster
+    400074: Robot Neck
+    400076: Robot Pelvis
+    400078: Robot R Calf
+    400080: Robot R Clavicle
+    400082: Robot R Foot
+    400084: Robot R Forearm
+    400086: Robot R Hand
+    400088: Robot R Thigh
+    400090: Robot R Toe0
+    400092: Robot R UpperArm
+    400094: Robot R_Thruster
+    400096: Robot Spine
+    400098: //RootNode
+    400100: Shield
+    400102: Torso
+    2300000: gun
+    2300002: Head
+    2300004: L_ForeArm
+    2300006: L_Hand
+    2300008: L_Heel
+    2300010: L_Shin
+    2300012: L_Shoulder
+    2300014: L_Thigh
+    2300016: L_Thruster
+    2300018: L_Toe
+    2300020: L_UpperArm
+    2300022: L_Wing-1
+    2300024: L_Wing-2
+    2300026: Neck
+    2300028: Pelvis
+    2300030: R_ForeArm
+    2300032: R_Hand
+    2300034: R_Heel
+    2300036: R_Shin
+    2300038: R_Shoulder
+    2300040: R_Thigh
+    2300042: R_Thruster
+    2300044: R_Toe
+    2300046: R_UpperArm
+    2300048: R_Wing-1
+    2300050: R_Wing-2
+    2300052: Shield
+    2300054: Torso
+    3300000: gun
+    3300002: Head
+    3300004: L_ForeArm
+    3300006: L_Hand
+    3300008: L_Heel
+    3300010: L_Shin
+    3300012: L_Shoulder
+    3300014: L_Thigh
+    3300016: L_Thruster
+    3300018: L_Toe
+    3300020: L_UpperArm
+    3300022: L_Wing-1
+    3300024: L_Wing-2
+    3300026: Neck
+    3300028: Pelvis
+    3300030: R_ForeArm
+    3300032: R_Hand
+    3300034: R_Heel
+    3300036: R_Shin
+    3300038: R_Shoulder
+    3300040: R_Thigh
+    3300042: R_Thruster
+    3300044: R_Toe
+    3300046: R_UpperArm
+    3300048: R_Wing-1
+    3300050: R_Wing-2
+    3300052: Shield
+    3300054: Torso
+    4300000: L_Toe
+    4300002: L_Heel
+    4300004: L_Shin
+    4300006: L_Thigh
+    4300008: R_Toe
+    4300010: R_Heel
+    4300012: R_Shin
+    4300014: R_Thigh
+    4300016: Head
+    4300018: Neck
+    4300020: Torso
+    4300022: L_Thruster
+    4300024: L_Wing-1
+    4300026: L_Wing-2
+    4300028: R_Thruster
+    4300030: R_Wing-1
+    4300032: R_Wing-2
+    4300034: R_Hand
+    4300036: gun
+    4300038: R_ForeArm
+    4300040: R_UpperArm
+    4300042: R_Shoulder
+    4300044: L_Hand
+    4300046: Shield
+    4300048: L_ForeArm
+    4300050: L_UpperArm
+    4300052: L_Shoulder
+    4300054: Pelvis
+    7400000: Wing Gundam Zero_01
+    9500000: //RootNode
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    optimizeGameObjects: 0
+    motionNodeName: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    animationCompression: 1
+    animationRotationError: .5
+    animationPositionError: .5
+    animationScaleError: .5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    importBlendShapes: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    splitTangentsAcrossUV: 1
+    normalImportMode: 0
+    tangentImportMode: 1
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    human: []
+    skeleton: []
+    armTwist: .5
+    foreArmTwist: .5
+    upperLegTwist: .5
+    legTwist: .5
+    armStretch: .0500000007
+    legStretch: .0500000007
+    feetSpacing: 0
+    rootMotionBoneName: 
+    hasTranslationDoF: 0
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 2
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

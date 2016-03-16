@@ -42,7 +42,7 @@ MonoBehaviour:
   _Levels:
   - _LevelName: Menu
     _State: 2
-  - _LevelName: Game
+  - _LevelName: test
     _State: 3
 --- !u!1001 &100100000
 Prefab:

@@ -72,6 +72,7 @@ public class Character : MonoBase
         }
         else if (Input.GetKey(KeyCode.S))
         {
+            
             _Animator.SetBool("Move", true);
             _Animator.SetBool("Attack", false);
             _Animator.SetInteger("MoveStateIndex", 2);
@@ -81,6 +82,7 @@ public class Character : MonoBase
 
         if (Input.GetKey(KeyCode.A))
         {
+            
             _Animator.SetBool("Move", true);
             _Animator.SetBool("Attack", false);
             _Animator.SetInteger("MoveStateIndex", 3);
