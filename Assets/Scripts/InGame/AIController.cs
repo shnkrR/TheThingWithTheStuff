@@ -185,15 +185,15 @@ public class AIController : MonoBehaviour
     {
 //        m_isCurrentDecisionDone=false;
 
-        Debug.Log("AI MAKING NEW DECISION");
+        //Debug.Log("AI MAKING NEW DECISION");
         if(true)
         {
-            Debug.Log("AI GONNA MOVE");
+            //Debug.Log("AI GONNA MOVE");
             m_eBotState = AIState.MOVEMENT;
         }
         else if(false)
         {
-            Debug.Log("AI GONNA ATTACK YO ASS");
+            //Debug.Log("AI GONNA ATTACK YO ASS");
             m_eBotState = AIState.COMBAT;
             
         }
@@ -219,13 +219,13 @@ public class AIController : MonoBehaviour
         
         if(a_strafeOrDashDecider >=m_strafeDashBehaviour)
         {
-            Debug.Log("AI GONNA STRAFE");
+            //Debug.Log("AI GONNA STRAFE");
             Strafe();
             
         }
         else if(a_strafeOrDashDecider < m_strafeDashBehaviour)
         {
-            Debug.Log("AI GONNA DASH");
+            //Debug.Log("AI GONNA DASH");
             Dash();
         }
         
@@ -243,12 +243,12 @@ public class AIController : MonoBehaviour
         
         if(a_strafeDirection == 1)
         {
-            Debug.Log("AI GONNA STRAFE TO THE LEFT");
+           // Debug.Log("AI GONNA STRAFE TO THE LEFT");
             m_movementInput = 2;
         }
         else if (a_strafeDirection == 2)
         {            
-            Debug.Log("AI GONNA STRAFE TO THE RIGHT");
+            //Debug.Log("AI GONNA STRAFE TO THE RIGHT");
             m_movementInput =3;
         }
         
@@ -263,12 +263,12 @@ public class AIController : MonoBehaviour
         
         if (a_dashDirection == 1)
         {
-            Debug.Log("AI GONNA DASH YO ASS");
+            //Debug.Log("AI GONNA DASH YO ASS");
             m_movementInput = 1;            
         }
         else if(a_dashDirection==2)
         {
-            Debug.Log("AI GONNA RUN AWAY LIKE A SISSY");
+            //Debug.Log("AI GONNA RUN AWAY LIKE A SISSY");
             m_movementInput = -1;            
         }
         
@@ -277,7 +277,7 @@ public class AIController : MonoBehaviour
     
     void DecisionCompleted()
     {
-        Debug.Log("THIS AI G HAS DONE WHAT IT WANTS GONNA DECIDE WHAT TO DO NOW");
+        //Debug.Log("THIS AI G HAS DONE WHAT IT WANTS GONNA DECIDE WHAT TO DO NOW");
         m_movementInput=10;
         Invoke("MakeNewDecision",Random.Range(0f,m_reactionTime));
     }

@@ -1,9 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class PlayerController : MonoBehaviour
+public class PlayerController : MonoBase
 {
-
     //BASE MOVEMENT VARIABLES
     private float m_fMovementSpeed;
     private float m_sMovementSpeed;
@@ -19,7 +18,10 @@ public class PlayerController : MonoBehaviour
 
 
     private Transform m_playerTransform;
+    
     private Transform m_enemyTransform;
+    public Transform _AI { get { return m_enemyTransform; } }
+
     private Camera m_playerCamera;
     private Vector3 m_moveDirection;
     private Vector3 m_moveSpeed;
@@ -32,6 +34,7 @@ public class PlayerController : MonoBehaviour
 
     private int m_dpadInput;
 
+    public Transform m_Camera;
 
     
 
@@ -66,6 +69,9 @@ public class PlayerController : MonoBehaviour
         m_moveSpeed = Vector3.zero;
         m_animatorController = transform.GetComponent<Animator>();
         m_isSideways = false;
+        m_animatorController.SetInteger("dir", 0);
+
+        _OnObjectHeld += OnObjectHeld;
      }
 
     void SetPlayerStats()
@@ -88,130 +94,125 @@ public class PlayerController : MonoBehaviour
         
     void Update()
     {
-
-#if UNITY_EDITOR
-
         HandleMovementInputs();
         HandleCombatInputs();
-
-#elif UNITY_ANDROID
-
-        HandleMovementInputs();
-        HandleCombatInputs();
-#endif
-
-
     }
+
+    void FixedUpdate()
+    {
+        m_dpadInput = 0;
+    }
+
+    void OnDestroy()
+    {
+        _OnObjectHeld -= OnObjectHeld;
+    }
+
+    #region System Events
+    void OnObjectHeld(Object a_Object)
+    {
+        GameObject go = (GameObject)a_Object;
+
+        if (go != null)
+        {
+            if (go.name == "DPad_Up")
+                m_dpadInput = 1;
+            else if (go.name == "DPad_Down")
+                m_dpadInput = -1;
+            else if (go.name == "DPad_Left")
+                m_dpadInput = 2;
+            else if (go.name == "DPad_Right")
+                m_dpadInput = 3;
+        }
+    }
+    #endregion
         
     void HandleMovementInputs()
     {
         m_isSideways = false;
         noInput = true;
-       
-           
-        if (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow) || m_dpadInput==1)
+        DpadDirections moveDir = DpadDirections.NONE;
+
+
+        if (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow) || m_dpadInput == 1)
+            moveDir = DpadDirections.FORWARD;
+        else if (Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow) || m_dpadInput == -1)
+            moveDir = DpadDirections.BACK;
+        else if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow) || m_dpadInput == 2)
+            moveDir = DpadDirections.LEFT;
+        else if (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow) || m_dpadInput == 3)
+            moveDir = DpadDirections.RIGHT;
+
+        Move(moveDir);
+    }
+    
+    void Move(DpadDirections a_Direction)
+    {
+        switch (a_Direction)
         {
-//            Debug.Log("W");
-            noInput = false;
-            m_animatorController.SetInteger("dir", 1);
-            m_moveDirection = m_playerTransform.forward;
-            m_moveSpeed = ((m_moveDirection * m_fMovementSpeed));
+            case DpadDirections.FORWARD:
+                noInput = false;
+                m_animatorController.SetInteger("dir", 1);
+                m_moveDirection = m_Camera.forward;
+                m_moveSpeed = ((m_moveDirection * m_fMovementSpeed));
                 
-            if (m_enemyTransform != null && Vector3.Distance(m_enemyTransform.position, m_playerTransform.position) < m_meleeDistance)
-            {
-                noInput = true;
-                m_moveSpeed = Vector3.zero;
-                m_moveDirection = Vector3.zero;
-            }
-        }
-        else if (Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow) || m_dpadInput==-1)
-        {
-//            Debug.Log("S");
-            noInput = false;
-            m_animatorController.SetInteger("dir", -1);
-            m_moveDirection = -m_playerTransform.forward;
-            m_moveSpeed = ((m_moveDirection * m_fMovementSpeed));
-        }
-        else if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow) || m_dpadInput==2)
-        {
-//            Debug.Log("A");
-            noInput = false;
-            m_animatorController.SetInteger("dir", 2);
-            m_isSideways = true;       
-            m_moveDirection = -m_playerTransform.right;
-            m_moveSpeed = ((m_moveDirection * m_sMovementSpeed));
-        }
-        else if (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow) || m_dpadInput==3)
-        {
-//            Debug.Log("D");
-            noInput = false;
-            m_animatorController.SetInteger("dir", 3);
-            m_isSideways = true;
-            m_moveDirection = m_playerTransform.right;
-            m_moveSpeed = ((m_moveDirection * m_sMovementSpeed));
-        }
-        else
-        {
+                if (m_enemyTransform != null && Vector3.Distance(m_enemyTransform.position, m_playerTransform.position) < m_meleeDistance)
+                {
+                    noInput = true;
+                    m_moveSpeed = Vector3.zero;
+                    m_moveDirection = Vector3.zero;
+                }
+                break;
 
-            m_animatorController.SetInteger("dir", 0);            
-        }
-            
-        if (noInput )
-        {
-            m_dpadInput=0;
-            m_animatorController.SetInteger("dir", 0);
-            m_moveSpeed = Vector3.Lerp(m_moveSpeed, Vector3.zero, Mathf.Clamp(m_inertia, 0f, 1.0f));
+            case DpadDirections.LEFT:
+                noInput = false;
+                m_animatorController.SetInteger("dir", 2);
+                m_isSideways = true;
+                m_moveDirection = -m_Camera.right;
+                m_moveSpeed = ((m_moveDirection * m_sMovementSpeed));
+                break;
+
+            case DpadDirections.RIGHT:
+                noInput = false;
+                m_animatorController.SetInteger("dir", 3);
+                m_isSideways = true;
+                m_moveDirection = m_Camera.right;
+                m_moveSpeed = ((m_moveDirection * m_sMovementSpeed));
+                break;
+
+            case DpadDirections.BACK:
+                noInput = false;
+                m_animatorController.SetInteger("dir", -1);
+                m_moveDirection = -m_Camera.forward;
+                m_moveSpeed = ((m_moveDirection * m_fMovementSpeed));
+                break;
+
+            case DpadDirections.NONE:
+                m_dpadInput=0;
+                m_animatorController.SetInteger("dir", 0);
+                m_moveSpeed = Vector3.Lerp(m_moveSpeed, Vector3.zero, Mathf.Clamp(m_inertia, 0f, 1.0f));
+                break;
         }
     }
-        
-    #region Dpad Inputs
-    public void GoFoward()
-    {
-        m_dpadInput = 1;
-    }
-
-    public void OnRelease()
-    {
-        m_dpadInput=0;
-    }
-
-    public void GoBack()
-    {
-        m_dpadInput = -1;
-    }
-
-    public void GoLeft()
-    {
-        m_dpadInput = 2;
-    }
-
-    public void GoRight()
-    {
-        m_dpadInput = 3;
-    }
-    #endregion
-
-    
-    
 
     void LateUpdate()
     {
-
         float oldDist = Vector3.Distance(m_playerTransform.position, m_enemyTransform.position);
         m_playerTransform.position += (m_moveSpeed * Time.deltaTime);
             
-        if (m_enemyTransform != null)
-            m_playerTransform.LookAt(m_enemyTransform);
-        else
-            m_playerTransform.LookAt(m_playerTransform.forward + new Vector3(0.0f, 0.0f, 10.0f));
+        //if (m_enemyTransform != null)
+        //    m_playerTransform.LookAt(m_enemyTransform);
+        //else
+        //    m_playerTransform.LookAt(m_playerTransform.forward + new Vector3(0.0f, 0.0f, 10.0f));
+
+        m_playerTransform.LookAt(m_playerTransform.position + (m_moveSpeed));
+        //float newDist = Vector3.Distance(m_playerTransform.position, m_enemyTransform.position);
             
-        float newDist = Vector3.Distance(m_playerTransform.position, m_enemyTransform.position);
-            
-        if (m_isSideways && m_enemyTransform != null)
-        {            
-            float diffDist = newDist - oldDist;
-            m_playerTransform.position += (m_playerTransform.forward * diffDist);
-        }        
+        //if (m_isSideways && m_enemyTransform != null)
+        //{            
+        //    float diffDist = newDist - oldDist;
+        //    m_playerTransform.position += (m_playerTransform.forward * diffDist);
+        //}        
     }
 
 

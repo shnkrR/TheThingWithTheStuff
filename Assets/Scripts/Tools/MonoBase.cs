@@ -1,15 +1,21 @@
 ﻿using UnityEngine;
-using System.Collections;
+using System.Collections.Generic;
+using UnityEngine.EventSystems;
 
 public class MonoBase : MonoBehaviour 
 {
     public static System.Action<Touch[]> _OnTouchesDetected;
     public static System.Action<Swipe> _OnSwiped;
 
+    public static System.Action<Object> _OnObjectHeld;
+    public static System.Action<Object> _OnObjectReleased;
+
     private const float m_SwipeDetectDiff = 20.0f;
 
+#if (UNITY_ANDROID || UNITY_IOS) && !UNITY_EDITOR
     private Vector3[] m_StartPositions = new Vector3[10];
     private Vector3[] m_EndPositions = new Vector3[10];
+#endif
 
     private Transform m_Transform;
     public new Transform transform 
@@ -49,9 +55,21 @@ public class MonoBase : MonoBehaviour
 
     protected virtual void Update()
     {
-//#if UNITY_EDITOR
-//        //Do nothing
-//#else
+#if UNITY_EDITOR
+        if (Input.GetMouseButton(0))
+        {
+            Object ob = GetCanvasObjectAt(Input.mousePosition);
+            if (ob != null && _OnObjectHeld != null)
+                _OnObjectHeld(ob);
+        }
+
+        if (Input.GetMouseButtonUp(0))
+        {
+            Object ob = GetCanvasObjectAt(Input.mousePosition);
+            if (ob != null && _OnObjectReleased != null)
+                _OnObjectReleased(ob);
+        }
+#elif UNITY_ANDROID || UNITY_IOS
         if (Input.touchCount > 0)
         {
             if (_OnTouchesDetected != null)
@@ -62,22 +80,26 @@ public class MonoBase : MonoBehaviour
 
             for (int i = 0; i < ((touches.Length > 10) ? 10 : touches.Length); i++)
             {
+                Object ob = GetCanvasObjectAt(touches[i].position);
+                if (ob != null && _OnObjectHeld != null)
+                    _OnObjectHeld(ob);
+
                 if (touches[i].phase == TouchPhase.Began)
                 {
                     m_StartPositions[i] = touches[i].position;
                     m_EndPositions[i] = Vector3.zero;
-                    //Debug.Log("Begun: " + i);
                 }
 
                 if (touches[i].phase == TouchPhase.Ended)
                 {
                     m_EndPositions[i] = touches[i].position;
-                    //Debug.Log("Ended: " + i);
+                    Object ob = GetCanvasObjectAt(touches[i].position);
+                    if (ob != null && _OnObjectReleased != null)
+                        _OnObjectReleased(ob);
                 }
 
                 if (m_StartPositions[i] != Vector3.zero && m_EndPositions[i] != Vector3.zero && Vector3.Distance(m_StartPositions[i], m_EndPositions[i]) > m_SwipeDetectDiff)
                 {
-                    //Debug.Log("Swiped::" + i + "::" + m_StartPositions[i] + "::" + m_EndPositions[i]);
                     Swipe swipe = new Swipe(m_StartPositions[i], m_EndPositions[i]);
                     if (_OnSwiped != null)
                         _OnSwiped(swipe);
@@ -86,6 +108,35 @@ public class MonoBase : MonoBehaviour
                 }
             }
         }
-//#endif
+#endif
+    }
+
+    private Object GetCanvasObjectAt(Vector3 a_Position)
+    {
+        if (EventSystem.current == null)
+            return null;
+
+        PointerEventData ped = new PointerEventData(EventSystem.current);
+        ped.position = a_Position;
+
+        if (ped == null)
+            return null;
+
+        List<RaycastResult> rayRes = new List<RaycastResult>();
+        EventSystem.current.RaycastAll(ped, rayRes);
+
+        if (rayRes.Count > 0)
+        {
+            for (int i = 0; i < rayRes.Count; i++)
+            {
+                if (rayRes[i].gameObject != null)
+                {
+                    Object ob = (Object)rayRes[i].gameObject;
+                    return ob;
+                }
+            }
+        }
+
+        return null;
     }
 }
