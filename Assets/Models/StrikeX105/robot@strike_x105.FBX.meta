@@ -1,0 +1,244 @@
+fileFormatVersion: 2
+guid: 7ab1ae468b4a88e4eb97e68d9be8ece0
+timeCreated: 1458208684
+licenseType: Pro
+ModelImporter:
+  serializedVersion: 18
+  fileIDToRecycleName:
+    100000: Booster
+    100002: Head
+    100004: L_Booster
+    100006: L_ForeArm
+    100008: L_Heel
+    100010: L_Shin
+    100012: L_Shoulder
+    100014: L_Thigh
+    100016: L_Toe
+    100018: L_UpperArm
+    100020: L_Wrist
+    100022: Machine_Gun
+    100024: neck
+    100026: Pelvis
+    100028: R_Booster
+    100030: R_ForeArm
+    100032: R_Heel001
+    100034: R_Shin
+    100036: R_Shoulder
+    100038: R_Thigh
+    100040: R_Toe
+    100042: R_UpperArm
+    100044: R_Wrist
+    100046: Robot
+    100048: Robot Head
+    100050: Robot L Calf
+    100052: Robot L Clavicle
+    100054: Robot L Foot
+    100056: Robot L Forearm
+    100058: Robot L Hand
+    100060: Robot L Thigh
+    100062: Robot L Toe0
+    100064: Robot L UpperArm
+    100066: Robot L_Thruster
+    100068: Robot Neck
+    100070: Robot Pelvis
+    100072: Robot R Calf
+    100074: Robot R Clavicle
+    100076: Robot R Foot
+    100078: Robot R Forearm
+    100080: Robot R Hand
+    100082: Robot R Thigh
+    100084: Robot R Toe0
+    100086: Robot R UpperArm
+    100088: Robot R_Thruster
+    100090: Robot Spine
+    100092: //RootNode
+    100094: Shield
+    100096: Torso
+    400000: Booster
+    400002: Head
+    400004: L_Booster
+    400006: L_ForeArm
+    400008: L_Heel
+    400010: L_Shin
+    400012: L_Shoulder
+    400014: L_Thigh
+    400016: L_Toe
+    400018: L_UpperArm
+    400020: L_Wrist
+    400022: Machine_Gun
+    400024: neck
+    400026: Pelvis
+    400028: R_Booster
+    400030: R_ForeArm
+    400032: R_Heel001
+    400034: R_Shin
+    400036: R_Shoulder
+    400038: R_Thigh
+    400040: R_Toe
+    400042: R_UpperArm
+    400044: R_Wrist
+    400046: Robot
+    400048: Robot Head
+    400050: Robot L Calf
+    400052: Robot L Clavicle
+    400054: Robot L Foot
+    400056: Robot L Forearm
+    400058: Robot L Hand
+    400060: Robot L Thigh
+    400062: Robot L Toe0
+    400064: Robot L UpperArm
+    400066: Robot L_Thruster
+    400068: Robot Neck
+    400070: Robot Pelvis
+    400072: Robot R Calf
+    400074: Robot R Clavicle
+    400076: Robot R Foot
+    400078: Robot R Forearm
+    400080: Robot R Hand
+    400082: Robot R Thigh
+    400084: Robot R Toe0
+    400086: Robot R UpperArm
+    400088: Robot R_Thruster
+    400090: Robot Spine
+    400092: //RootNode
+    400094: Shield
+    400096: Torso
+    2300000: Booster
+    2300002: Head
+    2300004: L_Booster
+    2300006: L_ForeArm
+    2300008: L_Heel
+    2300010: L_Shin
+    2300012: L_Shoulder
+    2300014: L_Thigh
+    2300016: L_Toe
+    2300018: L_UpperArm
+    2300020: L_Wrist
+    2300022: Machine_Gun
+    2300024: neck
+    2300026: Pelvis
+    2300028: R_Booster
+    2300030: R_ForeArm
+    2300032: R_Heel001
+    2300034: R_Shin
+    2300036: R_Shoulder
+    2300038: R_Thigh
+    2300040: R_Toe
+    2300042: R_UpperArm
+    2300044: R_Wrist
+    2300046: Shield
+    2300048: Torso
+    3300000: Booster
+    3300002: Head
+    3300004: L_Booster
+    3300006: L_ForeArm
+    3300008: L_Heel
+    3300010: L_Shin
+    3300012: L_Shoulder
+    3300014: L_Thigh
+    3300016: L_Toe
+    3300018: L_UpperArm
+    3300020: L_Wrist
+    3300022: Machine_Gun
+    3300024: neck
+    3300026: Pelvis
+    3300028: R_Booster
+    3300030: R_ForeArm
+    3300032: R_Heel001
+    3300034: R_Shin
+    3300036: R_Shoulder
+    3300038: R_Thigh
+    3300040: R_Toe
+    3300042: R_UpperArm
+    3300044: R_Wrist
+    3300046: Shield
+    3300048: Torso
+    4300000: neck
+    4300002: Head
+    4300004: L_Wrist
+    4300006: Shield
+    4300008: L_ForeArm
+    4300010: L_UpperArm
+    4300012: L_Shoulder
+    4300014: R_Wrist
+    4300016: Machine_Gun
+    4300018: R_ForeArm
+    4300020: R_UpperArm
+    4300022: R_Shoulder
+    4300024: L_Booster
+    4300026: R_Booster
+    4300028: Torso
+    4300030: Booster
+    4300032: L_Toe
+    4300034: L_Heel
+    4300036: L_Shin
+    4300038: L_Thigh
+    4300040: R_Toe
+    4300042: R_Heel001
+    4300044: R_Shin
+    4300046: R_Thigh
+    4300048: Pelvis
+    7400000: Strike Gundam X105_new
+    9500000: //RootNode
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    optimizeGameObjects: 0
+    motionNodeName: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    animationCompression: 1
+    animationRotationError: .5
+    animationPositionError: .5
+    animationScaleError: .5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    importBlendShapes: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    splitTangentsAcrossUV: 1
+    normalImportMode: 0
+    tangentImportMode: 1
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    human: []
+    skeleton: []
+    armTwist: .5
+    foreArmTwist: .5
+    upperLegTwist: .5
+    legTwist: .5
+    armStretch: .0500000007
+    legStretch: .0500000007
+    feetSpacing: 0
+    rootMotionBoneName: 
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 2
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

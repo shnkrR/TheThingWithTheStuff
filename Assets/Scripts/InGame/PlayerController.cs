@@ -7,6 +7,7 @@ public class PlayerController : MonoBase
     private float m_fMovementSpeed;
     private float m_sMovementSpeed;
     private float m_inertia;
+    private float m_TurnSpeed = 5.0f;
         
     //BASE COMBAT VARIABLES
     private float m_meleeDistance;
@@ -16,26 +17,25 @@ public class PlayerController : MonoBase
     private float m_refireRate;
     private float m_rangedDamage;
 
-
-    private Transform m_playerTransform;
-    
+    private Transform m_playerTransform;    
     private Transform m_enemyTransform;
     public Transform _AI { get { return m_enemyTransform; } }
 
     private Camera m_playerCamera;
+
+    private Vector3 m_PrevMoveDirection;
     private Vector3 m_moveDirection;
     private Vector3 m_moveSpeed;
-    private bool m_isSideways;
-    private float m_deafaultFSpeed;
+
     private RobotBase m_robotBase;
+
     private WeaponBase m_weaponBase;
+
     private Animator m_animatorController;
+
     private bool noInput = true;
 
     private int m_dpadInput;
-
-    public Transform m_Camera;
-
     
 
     public enum DpadDirections
@@ -50,26 +50,25 @@ public class PlayerController : MonoBase
     void Start()
     {            
         Initialise();            
-//        GameObject cam = mTransform.FindChild("Main Camera").gameObject;
-//        if (cam != null)
-//            mPlayerCamera = cam.GetComponent<Camera>();
-//        if (mPlayerCamera == null)
-//            mPlayerCamera = Camera.main;
-            
     }
 
     void Initialise()
     {
         m_playerTransform = transform;
+
         m_robotBase = transform.GetComponent<RobotBase>(); 
         m_weaponBase = transform.GetComponent<WeaponBase>();
+
         SetPlayerStats();
         SetEnemy();
+
         m_moveDirection = Vector3.zero;
         m_moveSpeed = Vector3.zero;
-        m_animatorController = transform.GetComponent<Animator>();
-        m_isSideways = false;
+
+        m_animatorController = transform.GetComponentInChildren<Animator>();
         m_animatorController.SetInteger("dir", 0);
+
+        m_playerCamera = transform.GetComponentInChildren<Camera>(); 
 
         _OnObjectHeld += OnObjectHeld;
      }
@@ -91,7 +90,8 @@ public class PlayerController : MonoBase
     {
         m_enemyTransform = GameObject.Find("AI").transform;
     }
-        
+
+    #region Unity Functions
     void Update()
     {
         HandleMovementInputs();
@@ -107,6 +107,20 @@ public class PlayerController : MonoBase
     {
         _OnObjectHeld -= OnObjectHeld;
     }
+
+    void LateUpdate()
+    {
+        float oldDist = Vector3.Distance(m_playerTransform.position, m_enemyTransform.position);
+        m_playerTransform.position += (m_moveSpeed * Time.deltaTime);
+
+        m_playerTransform.LookAt(m_playerTransform.position + (m_moveSpeed));
+
+        m_playerCamera.transform.localPosition = Vector3.zero;
+        m_playerCamera.transform.LookAt(m_enemyTransform.position);
+        m_playerCamera.transform.position += (m_playerCamera.transform.forward * -1.5f);
+        m_playerCamera.transform.localPosition += new Vector3(0.0f, 0.75f, 0.0f);
+    }
+    #endregion
 
     #region System Events
     void OnObjectHeld(Object a_Object)
@@ -129,19 +143,32 @@ public class PlayerController : MonoBase
         
     void HandleMovementInputs()
     {
-        m_isSideways = false;
         noInput = true;
         DpadDirections moveDir = DpadDirections.NONE;
 
 
         if (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow) || m_dpadInput == 1)
+        {
             moveDir = DpadDirections.FORWARD;
-        else if (Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow) || m_dpadInput == -1)
+            Move(moveDir);
+        }
+        else
+        if (Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow) || m_dpadInput == -1)
+        {
             moveDir = DpadDirections.BACK;
-        else if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow) || m_dpadInput == 2)
+            Move(moveDir);
+        }
+        if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow) || m_dpadInput == 2)
+        {
             moveDir = DpadDirections.LEFT;
-        else if (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow) || m_dpadInput == 3)
+            Move(moveDir);
+        }
+        else
+        if (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow) || m_dpadInput == 3)
+        {
             moveDir = DpadDirections.RIGHT;
+            Move(moveDir);
+        }
 
         Move(moveDir);
     }
@@ -153,10 +180,10 @@ public class PlayerController : MonoBase
             case DpadDirections.FORWARD:
                 noInput = false;
                 m_animatorController.SetInteger("dir", 1);
-                m_moveDirection = m_Camera.forward;
+                m_moveDirection = Vector3.Lerp(m_moveDirection, m_playerCamera.transform.forward, Time.deltaTime * m_TurnSpeed);
                 m_moveSpeed = ((m_moveDirection * m_fMovementSpeed));
                 
-                if (m_enemyTransform != null && Vector3.Distance(m_enemyTransform.position, m_playerTransform.position) < m_meleeDistance)
+                if (m_enemyTransform != null && Vector3.Distance(m_enemyTransform.position, m_playerTransform.position) < (m_meleeDistance * 2.0f))
                 {
                     noInput = true;
                     m_moveSpeed = Vector3.zero;
@@ -167,23 +194,21 @@ public class PlayerController : MonoBase
             case DpadDirections.LEFT:
                 noInput = false;
                 m_animatorController.SetInteger("dir", 2);
-                m_isSideways = true;
-                m_moveDirection = -m_Camera.right;
+                m_moveDirection = Vector3.Lerp(m_moveDirection, -m_playerCamera.transform.right, Time.deltaTime * m_TurnSpeed);
                 m_moveSpeed = ((m_moveDirection * m_sMovementSpeed));
                 break;
 
             case DpadDirections.RIGHT:
                 noInput = false;
                 m_animatorController.SetInteger("dir", 3);
-                m_isSideways = true;
-                m_moveDirection = m_Camera.right;
+                m_moveDirection = Vector3.Lerp(m_moveDirection, m_playerCamera.transform.right, Time.deltaTime * m_TurnSpeed);
                 m_moveSpeed = ((m_moveDirection * m_sMovementSpeed));
                 break;
 
             case DpadDirections.BACK:
                 noInput = false;
                 m_animatorController.SetInteger("dir", -1);
-                m_moveDirection = -m_Camera.forward;
+                m_moveDirection = Vector3.Lerp(m_moveDirection, -m_playerCamera.transform.forward, Time.deltaTime * m_TurnSpeed);
                 m_moveSpeed = ((m_moveDirection * m_fMovementSpeed));
                 break;
 
@@ -193,26 +218,6 @@ public class PlayerController : MonoBase
                 m_moveSpeed = Vector3.Lerp(m_moveSpeed, Vector3.zero, Mathf.Clamp(m_inertia, 0f, 1.0f));
                 break;
         }
-    }
-
-    void LateUpdate()
-    {
-        float oldDist = Vector3.Distance(m_playerTransform.position, m_enemyTransform.position);
-        m_playerTransform.position += (m_moveSpeed * Time.deltaTime);
-            
-        //if (m_enemyTransform != null)
-        //    m_playerTransform.LookAt(m_enemyTransform);
-        //else
-        //    m_playerTransform.LookAt(m_playerTransform.forward + new Vector3(0.0f, 0.0f, 10.0f));
-
-        m_playerTransform.LookAt(m_playerTransform.position + (m_moveSpeed));
-        //float newDist = Vector3.Distance(m_playerTransform.position, m_enemyTransform.position);
-            
-        //if (m_isSideways && m_enemyTransform != null)
-        //{            
-        //    float diffDist = newDist - oldDist;
-        //    m_playerTransform.position += (m_playerTransform.forward * diffDist);
-        //}        
     }
 
 
