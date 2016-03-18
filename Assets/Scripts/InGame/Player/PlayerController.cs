@@ -50,6 +50,7 @@ public class PlayerController : MonoBase
     private int m_LastMeleeAttackIndex = -1;
 
     private List<MeleeAnimData> m_MeleeAnimData = new List<MeleeAnimData>();
+	private Enums.CombatState m_playerCombatState;
 
 
     public enum DpadDirections
@@ -116,6 +117,8 @@ public class PlayerController : MonoBase
         m_meleeDamage = m_weaponBase.m_meleeDamage;
         m_refireRate = m_weaponBase.m_refireRate;
         m_rangedDamage = m_weaponBase.m_rangedDamage;
+		m_playerCombatState = Enums.CombatState.Melee;
+		
     }
 
     void SetEnemy()
@@ -149,8 +152,9 @@ public class PlayerController : MonoBase
         m_playerCamera.transform.localPosition = Vector3.zero;
         m_playerCamera.transform.LookAt(m_enemyTransform.position);
         m_playerCamera.transform.position += (m_playerCamera.transform.forward * -1.5f);
-        m_playerCamera.transform.localPosition += new Vector3(0.0f, 0.75f, 0.0f);
-
+        m_playerCamera.transform.localPosition += new Vector3(0.0f, .75f, 0.0f);
+//        m_playerCamera.transform.LookAt(m_enemyTransform.position);
+		
         if ((m_animatorController.GetInteger("moveAttackIndex") == 0) && m_animatorController.GetInteger("dir") == 0)
             HandleDistanceTransitions();
     }
@@ -262,6 +266,8 @@ public class PlayerController : MonoBase
         float dist = Vector3.Distance(m_playerTransform.position, m_enemyTransform.position);
         if (dist > m_meleeDistance)
         {
+
+			m_playerCombatState = Enums.CombatState.Ranged;
             if (m_IdlePose != 1)
             {
                 m_animatorController.SetInteger("IdleTransitions", 2);
@@ -271,6 +277,7 @@ public class PlayerController : MonoBase
         }
         else
         {
+			m_playerCombatState = Enums.CombatState.Melee;
             if (m_IdlePose != 0)
             {
                 m_animatorController.SetInteger("IdleTransitions", 1);
@@ -297,34 +304,40 @@ public class PlayerController : MonoBase
         if (m_animatorController.GetInteger("dir") != 0)
             return;
 
-        if(Input.GetKeyUp(KeyCode.K))
-        {
 
-				m_playerTransform.LookAt(m_enemyTransform.position);
-				m_animatorController.SetInteger("moveAttackIndex",1);
-				m_animatorController.SetInteger("rangedMeleeIndex",0);
+
+        if (Input.GetKeyUp(KeyCode.UpArrow) )
+        {
+			if(m_playerCombatState == Enums.CombatState.Melee && (m_TimesMeleeAttacked == 0) && ((Time.time - m_TimeSinceLastMeleeInput) > m_MeleeCoolDown) )
+			{
+				m_TimesMeleeAttacked++;
+	            m_TimeSinceLastMeleeInput = Time.time;
+	            m_animatorController.SetInteger("moveAttackIndex", 1);
+	            m_LastMeleeAttackIndex = Random.Range(0, 3);
+	            m_animatorController.SetInteger("MeleeAttackIndex", m_LastMeleeAttackIndex);
+	            InvokeRepeating("TakeNextCombatInput", m_MeleeAnimData[m_LastMeleeAttackIndex].m_InputStartTime, (1.0f / 60.0f));
+	            m_playerTransform.LookAt(m_enemyTransform);
+	            Invoke("SendHit", m_MeleeAnimData[m_LastMeleeAttackIndex].m_HitTime); 	
+        
+			}
+
+			else if (m_playerCombatState == Enums.CombatState.Ranged) 
+			{
+				m_animatorController.SetInteger("moveAttackIndex",0);
 				
-			
-		
-        }
-		if(Input.GetKeyUp(KeyCode.K))
-		{
-			m_animatorController.SetInteger("moveAttackIndex",0);
-			
-		}
+			}
+    	}
 
-        if (Input.GetKeyUp(KeyCode.UpArrow) && (m_TimesMeleeAttacked == 0) && ((Time.time - m_TimeSinceLastMeleeInput) > m_MeleeCoolDown))
-        {
-            m_TimesMeleeAttacked++;
-            m_TimeSinceLastMeleeInput = Time.time;
-            m_animatorController.SetInteger("moveAttackIndex", 1);
-            m_LastMeleeAttackIndex = Random.Range(0, 3);
-            m_animatorController.SetInteger("MeleeAttackIndex", m_LastMeleeAttackIndex);
-            InvokeRepeating("TakeNextCombatInput", m_MeleeAnimData[m_LastMeleeAttackIndex].m_InputStartTime, (1.0f / 60.0f));
-            m_playerTransform.LookAt(m_enemyTransform);
-            Invoke("SendHit", m_MeleeAnimData[m_LastMeleeAttackIndex].m_HitTime);
-        }
-    }
+		if(Input.GetKey(KeyCode.UpArrow))
+		{
+			if(m_playerCombatState == Enums.CombatState.Ranged)
+			{
+				m_playerTransform.LookAt(m_enemyTransform.position);
+				m_animatorController.SetInteger("moveAttackIndex",2);     	     	
+				//				m_animatorController.SetInteger("rangedMeleeIndex",0);
+			}
+		}
+	}
 
     void TakeNextCombatInput()
     {
@@ -370,11 +383,11 @@ public class PlayerController : MonoBase
 
     void SendHit()
     {
-        if (Vector3.Distance(transform.position, _AI.position) <= m_meleeDistance)
-        {
-            Debug.Log("HIt");
-            m_animatorController.SetInteger("moveAttackIndex", 2);
-        }
+//        if (Vector3.Distance(transform.position, _AI.position) <= m_meleeDistance)
+//        {
+//            Debug.Log("HIt");
+//            m_animatorController.SetInteger("moveAttackIndex", 2);
+//        }
     }
     #endregion
 
