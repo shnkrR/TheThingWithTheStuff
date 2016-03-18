@@ -102,23 +102,27 @@ public class AIController : MonoBehaviour
     }
 
     void LateUpdate()
-    {
-        
-        float oldDist = Vector3.Distance(m_playerTransform.position, m_enemyTransform.position);
+    {        
+        //float oldDist = Vector3.Distance(m_playerTransform.position, m_enemyTransform.position);
+
+        Vector3 prev = m_playerTransform.position;
         m_playerTransform.position += (m_moveSpeed * Time.deltaTime);
+
+        if (Vector3.Distance(Vector3.zero, transform.position) > World.WorldRadius)
+            m_playerTransform.position = prev;
         
         if (m_enemyTransform != null)
             m_playerTransform.LookAt(m_enemyTransform);
         else
             m_playerTransform.LookAt(m_playerTransform.forward + new Vector3(0.0f, 0.0f, 10.0f));
         
-        float newDist = Vector3.Distance(m_playerTransform.position, m_enemyTransform.position);
+        //float newDist = Vector3.Distance(m_playerTransform.position, m_enemyTransform.position);
         
-        if (m_isSideways && m_enemyTransform != null)
-        {            
-            float diffDist = newDist - oldDist;
-            m_playerTransform.position += (m_playerTransform.forward * diffDist);
-        }        
+        //if (m_isSideways && m_enemyTransform != null)
+        //{            
+        //    float diffDist = newDist - oldDist;
+        //    m_playerTransform.position += (m_playerTransform.forward * diffDist);
+        //}        
     }
     
     

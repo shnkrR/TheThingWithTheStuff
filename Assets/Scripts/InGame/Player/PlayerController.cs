@@ -149,7 +149,14 @@ public class PlayerController : MonoBase
 
     void LateUpdate()
     {
+        Vector3 prev = m_playerTransform.position;
         m_playerTransform.position += (m_moveSpeed * Time.deltaTime);
+
+        if (Vector3.Distance(Vector3.zero, transform.position) > World.WorldRadius)
+        {
+            float diff = Vector3.Distance(prev, m_playerTransform.position);
+            m_playerTransform.position += (m_playerCamera.transform.forward * diff);
+        }
 
         if (!m_knockBack)
             m_playerTransform.LookAt(m_playerTransform.position + (m_moveSpeed));
