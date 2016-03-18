@@ -14,4 +14,6 @@ public class WeaponBase : MonoBehaviour {
     public float m_refireRate;
     public float m_rangedDamage;
 
+    public GameObject m_MeleeWeapon;
+    public GameObject m_RangeWeapon;
 }

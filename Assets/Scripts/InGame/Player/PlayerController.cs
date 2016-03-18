@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class PlayerController : MonoBase
 {
@@ -7,15 +8,17 @@ public class PlayerController : MonoBase
     private float m_fMovementSpeed;
     private float m_sMovementSpeed;
     private float m_inertia;
-    private float m_TurnSpeed = 5.0f;
+    //
         
     //BASE COMBAT VARIABLES
     private float m_meleeDistance;
+    public float p_meleeDistance { get { return m_meleeDistance; } }
     private float m_meleeAttackRate;
     private float m_meleeDamage;
     private float m_clipCapacity;
     private float m_refireRate;
     private float m_rangedDamage;
+    //
 
     private Transform m_playerTransform;    
     private Transform m_enemyTransform;
@@ -35,8 +38,19 @@ public class PlayerController : MonoBase
 
     private bool noInput = true;
 
+    private float m_TurnSpeed = 5.0f;
+    private float m_CurrentIdleValue;
+    private float m_TimeSinceLastMeleeInput = -5.0f;
+    private float m_MaxTimeForInput = 0.5f;
+    private float m_MeleeCoolDown = 1.0f;
+
     private int m_dpadInput;
-    
+    private int m_IdlePose;
+    private int m_TimesMeleeAttacked;
+    private int m_LastMeleeAttackIndex = -1;
+
+    private List<MeleeAnimData> m_MeleeAnimData = new List<MeleeAnimData>();
+
 
     public enum DpadDirections
     {
@@ -67,10 +81,28 @@ public class PlayerController : MonoBase
 
         m_animatorController = transform.GetComponentInChildren<Animator>();
         m_animatorController.SetInteger("dir", 0);
+        m_animatorController.SetInteger("moveAttackIndex", 0);
+        m_animatorController.SetFloat("IdlePose", 0.0f);
+        m_animatorController.SetInteger("IdleTransitions", 0);
+        m_animatorController.SetInteger("MeleeAttackIndex", 0);
 
         m_playerCamera = transform.GetComponentInChildren<Camera>(); 
 
         _OnObjectHeld += OnObjectHeld;
+
+        m_IdlePose = -1;
+        m_CurrentIdleValue = 0;
+        m_weaponBase.m_MeleeWeapon.SetActive(false);
+        m_weaponBase.m_RangeWeapon.SetActive(false);
+
+        MeleeAnimData m = new MeleeAnimData(0.455f, 0.667f, 0.4f);
+        m_MeleeAnimData.Add(m);
+        m = new MeleeAnimData(0.5f, 0.667f, 0.45f);
+        m_MeleeAnimData.Add(m);
+        m = new MeleeAnimData(0.455f, 0.667f, 0.4f);
+        m_MeleeAnimData.Add(m);
+        m = new MeleeAnimData(0.5f, 0.833f, 0.455f);
+        m_MeleeAnimData.Add(m);
      }
 
     void SetPlayerStats()
@@ -110,7 +142,6 @@ public class PlayerController : MonoBase
 
     void LateUpdate()
     {
-        float oldDist = Vector3.Distance(m_playerTransform.position, m_enemyTransform.position);
         m_playerTransform.position += (m_moveSpeed * Time.deltaTime);
 
         m_playerTransform.LookAt(m_playerTransform.position + (m_moveSpeed));
@@ -119,6 +150,9 @@ public class PlayerController : MonoBase
         m_playerCamera.transform.LookAt(m_enemyTransform.position);
         m_playerCamera.transform.position += (m_playerCamera.transform.forward * -1.5f);
         m_playerCamera.transform.localPosition += new Vector3(0.0f, 0.75f, 0.0f);
+
+        if ((m_animatorController.GetInteger("moveAttackIndex") == 0) && m_animatorController.GetInteger("dir") == 0)
+            HandleDistanceTransitions();
     }
     #endregion
 
@@ -147,24 +181,24 @@ public class PlayerController : MonoBase
         DpadDirections moveDir = DpadDirections.NONE;
 
 
-        if (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow) || m_dpadInput == 1)
+        if (Input.GetKey(KeyCode.W) || m_dpadInput == 1)
         {
             moveDir = DpadDirections.FORWARD;
             Move(moveDir);
         }
         else
-        if (Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow) || m_dpadInput == -1)
+        if (Input.GetKey(KeyCode.S) || m_dpadInput == -1)
         {
             moveDir = DpadDirections.BACK;
             Move(moveDir);
         }
-        if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow) || m_dpadInput == 2)
+        if (Input.GetKey(KeyCode.A) || m_dpadInput == 2)
         {
             moveDir = DpadDirections.LEFT;
             Move(moveDir);
         }
         else
-        if (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow) || m_dpadInput == 3)
+        if (Input.GetKey(KeyCode.D) || m_dpadInput == 3)
         {
             moveDir = DpadDirections.RIGHT;
             Move(moveDir);
@@ -175,6 +209,9 @@ public class PlayerController : MonoBase
     
     void Move(DpadDirections a_Direction)
     {
+        if (m_animatorController.GetInteger("moveAttackIndex") > 0)
+            return;
+
         switch (a_Direction)
         {
             case DpadDirections.FORWARD:
@@ -183,7 +220,7 @@ public class PlayerController : MonoBase
                 m_moveDirection = Vector3.Lerp(m_moveDirection, m_playerCamera.transform.forward, Time.deltaTime * m_TurnSpeed);
                 m_moveSpeed = ((m_moveDirection * m_fMovementSpeed));
                 
-                if (m_enemyTransform != null && Vector3.Distance(m_enemyTransform.position, m_playerTransform.position) < (m_meleeDistance * 2.0f))
+                if (m_enemyTransform != null && Vector3.Distance(m_enemyTransform.position, m_playerTransform.position) < (m_meleeDistance))
                 {
                     noInput = true;
                     m_moveSpeed = Vector3.zero;
@@ -220,17 +257,125 @@ public class PlayerController : MonoBase
         }
     }
 
+    void HandleDistanceTransitions()
+    {
+        float dist = Vector3.Distance(m_playerTransform.position, m_enemyTransform.position);
+        if (dist > m_meleeDistance)
+        {
+            if (m_IdlePose != 1)
+            {
+                m_animatorController.SetInteger("IdleTransitions", 2);
+                Invoke("OnTransitionComplete", 0.5f);
+                m_IdlePose = 1;
+            }
+        }
+        else
+        {
+            if (m_IdlePose != 0)
+            {
+                m_animatorController.SetInteger("IdleTransitions", 1);
+                Invoke("OnTransitionComplete", 0.5f);
+                m_IdlePose = 0;
+            }
+        }
+
+        m_CurrentIdleValue = Mathf.Lerp(m_CurrentIdleValue, m_IdlePose, Time.deltaTime * 10.0f);
+    }
+
+    void OnTransitionComplete()
+    {
+        m_weaponBase.m_MeleeWeapon.SetActive((m_IdlePose == 0) ? true : false);
+        m_weaponBase.m_RangeWeapon.SetActive((m_IdlePose == 1) ? true : false);
+
+        m_animatorController.SetFloat("IdlePose", m_CurrentIdleValue);
+        m_animatorController.SetInteger("IdleTransitions", 0);
+    }
 
     #region Combat
-
     void HandleCombatInputs()
     {
+        if (m_animatorController.GetInteger("dir") != 0)
+            return;
+
         if(Input.GetKeyUp(KeyCode.K))
         {
 
+				m_playerTransform.LookAt(m_enemyTransform.position);
+				m_animatorController.SetInteger("moveAttackIndex",1);
+				m_animatorController.SetInteger("rangedMeleeIndex",0);
+				
+			
+		
+        }
+		if(Input.GetKeyUp(KeyCode.K))
+		{
+			m_animatorController.SetInteger("moveAttackIndex",0);
+			
+		}
+
+        if (Input.GetKeyUp(KeyCode.UpArrow) && (m_TimesMeleeAttacked == 0) && ((Time.time - m_TimeSinceLastMeleeInput) > m_MeleeCoolDown))
+        {
+            m_TimesMeleeAttacked++;
+            m_TimeSinceLastMeleeInput = Time.time;
+            m_animatorController.SetInteger("moveAttackIndex", 1);
+            m_LastMeleeAttackIndex = Random.Range(0, 3);
+            m_animatorController.SetInteger("MeleeAttackIndex", m_LastMeleeAttackIndex);
+            InvokeRepeating("TakeNextCombatInput", m_MeleeAnimData[m_LastMeleeAttackIndex].m_InputStartTime, (1.0f / 60.0f));
+            m_playerTransform.LookAt(m_enemyTransform);
+            Invoke("SendHit", m_MeleeAnimData[m_LastMeleeAttackIndex].m_HitTime);
         }
     }
 
+    void TakeNextCombatInput()
+    {
+        if ((Time.time - m_TimeSinceLastMeleeInput) > (m_MeleeAnimData[m_LastMeleeAttackIndex].m_InputExpireTime))
+        {
+            m_TimesMeleeAttacked = 0;
+            m_animatorController.SetInteger("moveAttackIndex", 0);
+            m_animatorController.SetInteger("dir", 0);            
+            m_LastMeleeAttackIndex = -1;
+            CancelInvoke("TakeNextCombatInput");
+        }
+        else
+        {
+            if (Input.GetKeyUp(KeyCode.UpArrow))
+            {
+                if (m_TimesMeleeAttacked < 4)
+                {
+                    Debug.Log("Input");
+                    m_TimesMeleeAttacked++;
+                    m_TimeSinceLastMeleeInput = Time.time;
+                    m_animatorController.SetInteger("moveAttackIndex", 1);
+                    int rand = -1;
+
+                    if (m_TimesMeleeAttacked != 4)
+                    {
+                        do
+                            rand = Random.Range(0, 3);
+                        while (m_LastMeleeAttackIndex == rand);
+                    }
+                    else
+                        rand = m_LastMeleeAttackIndex = 3;
+
+                    m_animatorController.SetInteger("MeleeAttackIndex", rand);
+                    m_LastMeleeAttackIndex = rand;
+                    m_playerTransform.LookAt(m_enemyTransform);
+                    Invoke("SendHit", m_MeleeAnimData[m_LastMeleeAttackIndex].m_HitTime);
+                    CancelInvoke("TakeNextCombatInput");
+                    InvokeRepeating("TakeNextCombatInput", m_MeleeAnimData[m_LastMeleeAttackIndex].m_InputStartTime, (1.0f / 60.0f));
+                }
+            }
+        }
+    }
+
+    void SendHit()
+    {
+        if (Vector3.Distance(transform.position, _AI.position) <= m_meleeDistance)
+        {
+            Debug.Log("HIt");
+            m_animatorController.SetInteger("moveAttackIndex", 2);
+        }
+    }
     #endregion
 
 }

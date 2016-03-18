@@ -1,6 +1,6 @@
 fileFormatVersion: 2
-guid: 533eb1a2a47e4e947a4264dd53197693
-timeCreated: 1458208683
+guid: 14f49da4b66b2164ba56bb23430978ca
+timeCreated: 1458237085
 licenseType: Pro
 ModelImporter:
   serializedVersion: 18
@@ -53,8 +53,7 @@ ModelImporter:
     400042: Robot R_Thruster
     400044: Robot Spine
     400046: //RootNode
-    7400000: Take 001
-    7400002: base
+    7400000: base
     9500000: //RootNode
   materials:
     importMaterials: 1
@@ -69,7 +68,7 @@ ModelImporter:
     animationImportWarnings: 
     animationRetargetingWarnings: 
     animationDoRetargetingWarnings: 0
-    animationCompression: 0
+    animationCompression: 1
     animationRotationError: .5
     animationPositionError: .5
     animationScaleError: .5
