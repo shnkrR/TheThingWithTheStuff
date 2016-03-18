@@ -281,6 +281,4 @@ public class AIController : MonoBehaviour
         m_movementInput=10;
         Invoke("MakeNewDecision",Random.Range(0f,m_reactionTime));
     }
-
-
 }

@@ -2359,10 +2359,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f682021f5e75e6244bc0304729d81aca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_strafeDashBehaviour: 0
-  m_strafeDistance: 0
-  m_dashDistance: 0
-  m_reactionTime: 1
+  m_strafeDashBehaviour: .5
+  m_strafeDistance: 7
+  m_dashDistance: 5
+  m_reactionTime: 10
   m_enemyTransform: {fileID: 0}
 --- !u!114 &11493816
 MonoBehaviour:
@@ -2378,6 +2378,8 @@ MonoBehaviour:
   m_fMovementSpeed: 10
   m_sMovementSpeed: 10
   m_inertia: .0500000007
+  m_knockBackTime: 0
+  m_knockbackSpeed: 0
   m_meleeDistance: 1
 --- !u!1001 &100100000
 Prefab:
