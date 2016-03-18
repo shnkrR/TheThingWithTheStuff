@@ -234,7 +234,7 @@ public class PlayerController : MonoBase
         {
             case DpadDirections.FORWARD:
                 m_animatorController.SetInteger("dir", 1);
-                m_moveDirection = Vector3.Lerp(m_moveDirection, Vector3.forward, Time.deltaTime * m_TurnSpeed);
+                m_moveDirection = Vector3.Lerp(m_moveDirection, sourceTrans.forward, Time.deltaTime * m_TurnSpeed);
                 m_moveSpeed = ((m_moveDirection * m_fMovementSpeed));
                 
                 if (m_enemyTransform != null && Vector3.Distance(m_enemyTransform.position, m_playerTransform.position) < (m_meleeDistance))
@@ -246,19 +246,19 @@ public class PlayerController : MonoBase
 
             case DpadDirections.LEFT:
                 m_animatorController.SetInteger("dir", 2);
-                m_moveDirection = Vector3.Lerp(m_moveDirection, -Vector3.right, Time.deltaTime * m_TurnSpeed);
+                m_moveDirection = Vector3.Lerp(m_moveDirection, -sourceTrans.right, Time.deltaTime * m_TurnSpeed);
                 m_moveSpeed = ((m_moveDirection * m_sMovementSpeed));
                 break;
 
             case DpadDirections.RIGHT:
                 m_animatorController.SetInteger("dir", 3);
-                m_moveDirection = Vector3.Lerp(m_moveDirection, Vector3.right, Time.deltaTime * m_TurnSpeed);
+                m_moveDirection = Vector3.Lerp(m_moveDirection, sourceTrans.right, Time.deltaTime * m_TurnSpeed);
                 m_moveSpeed = ((m_moveDirection * m_sMovementSpeed));
                 break;
 
             case DpadDirections.BACK:
                 m_animatorController.SetInteger("dir", -1);
-                m_moveDirection = Vector3.Lerp(m_moveDirection, -Vector3.forward, Time.deltaTime * m_TurnSpeed);
+                m_moveDirection = Vector3.Lerp(m_moveDirection, -sourceTrans.forward, Time.deltaTime * m_TurnSpeed);
                 m_moveSpeed = ((m_moveDirection * m_fMovementSpeed));
                 break;
 
