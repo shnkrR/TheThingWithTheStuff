@@ -270,7 +270,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 2015896, guid: 16a957e485b5ee64fbe97d26baf66500, type: 2}
       propertyPath: m_Enabled
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 16a957e485b5ee64fbe97d26baf66500, type: 2}
@@ -330,6 +330,10 @@ Prefab:
       propertyPath: m_enemyTransform
       value: 
       objectReference: {fileID: 751997456}
+    - target: {fileID: 11486914, guid: 148cf6eb591b80c4ea15dd54dbaf49b3, type: 2}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 8105860, guid: 148cf6eb591b80c4ea15dd54dbaf49b3, type: 2}
   m_ParentPrefab: {fileID: 100100000, guid: 148cf6eb591b80c4ea15dd54dbaf49b3, type: 2}
@@ -350,7 +354,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1046445086
 MonoBehaviour:
   m_ObjectHideFlags: 0
