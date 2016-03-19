@@ -1,0 +1,183 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 6
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_Name: ShieldNew
+  m_Shader: {fileID: 4800000, guid: ae5bc74fac33fcf48802464317b5b61a, type: 3}
+  m_ShaderKeywords: 
+  m_LightmapFlags: 5
+  m_CustomRenderQueue: 3000
+  stringTagMap: {}
+  m_SavedProperties:
+    serializedVersion: 2
+    m_TexEnvs:
+      data:
+        first:
+          name: _MainTex
+        second:
+          m_Texture: {fileID: 2800000, guid: 443a7f945ca9eab4582b602a82bd79e1, type: 3}
+          m_Scale: {x: 2, y: 1}
+          m_Offset: {x: 0, y: 0}
+      data:
+        first:
+          name: _NormalMap
+        second:
+          m_Texture: {fileID: 2800000, guid: 2d7da181fdff0384ca7407c81fe9f407, type: 3}
+          m_Scale: {x: 1, y: 1}
+          m_Offset: {x: 0, y: 0}
+      data:
+        first:
+          name: _Cube
+        second:
+          m_Texture: {fileID: 8900000, guid: 5f483f64711e61949bb3d76328ce0629, type: 3}
+          m_Scale: {x: 1, y: 1}
+          m_Offset: {x: 0, y: 0}
+      data:
+        first:
+          name: _FogNoiseTexture
+        second:
+          m_Texture: {fileID: 0}
+          m_Scale: {x: 1, y: 1}
+          m_Offset: {x: 0, y: 0}
+      data:
+        first:
+          name: _Seamless
+        second:
+          m_Texture: {fileID: 2800000, guid: 1009a159e55c737428409411739bb89f, type: 3}
+          m_Scale: {x: 1, y: 1}
+          m_Offset: {x: 0, y: 0}
+      data:
+        first:
+          name: _NoiseMap
+        second:
+          m_Texture: {fileID: 2800000, guid: 2d7da181fdff0384ca7407c81fe9f407, type: 3}
+          m_Scale: {x: 1, y: 1}
+          m_Offset: {x: 0, y: 0}
+      data:
+        first:
+          name: _NoiseTex
+        second:
+          m_Texture: {fileID: 2800000, guid: 0e109c029591faf42a96be53b922fa82, type: 3}
+          m_Scale: {x: 1, y: 1}
+          m_Offset: {x: 0, y: 0}
+      data:
+        first:
+          name: _ScrollTex
+        second:
+          m_Texture: {fileID: 0}
+          m_Scale: {x: 1, y: 1}
+          m_Offset: {x: 0, y: 0}
+      data:
+        first:
+          name: _WobbleTex
+        second:
+          m_Texture: {fileID: 2800000, guid: 2d7da181fdff0384ca7407c81fe9f407, type: 3}
+          m_Scale: {x: 1, y: 1}
+          m_Offset: {x: 0, y: 0}
+      data:
+        first:
+          name: _ElecTex
+        second:
+          m_Texture: {fileID: 2800000, guid: 443a7f945ca9eab4582b602a82bd79e1, type: 3}
+          m_Scale: {x: 1, y: 1}
+          m_Offset: {x: 0, y: 0}
+      data:
+        first:
+          name: _ElecMask
+        second:
+          m_Texture: {fileID: 0}
+          m_Scale: {x: 1, y: 1}
+          m_Offset: {x: 0, y: 0}
+      data:
+        first:
+          name: _NoiseBump
+        second:
+          m_Texture: {fileID: 2800000, guid: 2d7da181fdff0384ca7407c81fe9f407, type: 3}
+          m_Scale: {x: 1, y: 1}
+          m_Offset: {x: 0, y: 0}
+    m_Floats:
+      data:
+        first:
+          name: _HeightFogFactor
+        second: 2
+      data:
+        first:
+          name: _SkyGradientHeight
+        second: 1
+      data:
+        first:
+          name: _GradientFallOff
+        second: 0
+      data:
+        first:
+          name: FogHeightStart
+        second: 0
+      data:
+        first:
+          name: FogHeightEnd
+        second: 1
+      data:
+        first:
+          name: _SunSize
+        second: .0700000003
+      data:
+        first:
+          name: _Contrast
+        second: 0
+      data:
+        first:
+          name: _SunMultiplier
+        second: 1.17999995
+      data:
+        first:
+          name: _HaloSize
+        second: 1
+      data:
+        first:
+          name: _CollisionMult
+        second: 0
+      data:
+        first:
+          name: _CollisionTime
+        second: -3
+      data:
+        first:
+          name: _ClipRange
+        second: 0
+      data:
+        first:
+          name: _ShieldOpacity
+        second: 0
+      data:
+        first:
+          name: _ShieldEffectMult
+        second: .600000024
+    m_Colors:
+      data:
+        first:
+          name: _HorizonColor
+        second: {r: 0, g: 0, b: 0, a: 1}
+      data:
+        first:
+          name: _ZenithColor
+        second: {r: 1, g: 1, b: 1, a: 1}
+      data:
+        first:
+          name: _OppHorizonColor
+        second: {r: 1, g: 1, b: 1, a: 1}
+      data:
+        first:
+          name: _HaloColor
+        second: {r: 1, g: 1, b: 1, a: .200000003}
+      data:
+        first:
+          name: _ShieldColor
+        second: {r: 1.3498683, g: 6.29849529, b: 13.1130009, a: 1}
+      data:
+        first:
+          name: _EdgeColor
+        second: {r: 0, g: .46274519, b: 1, a: 1}
