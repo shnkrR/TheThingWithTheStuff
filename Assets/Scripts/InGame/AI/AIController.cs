@@ -64,7 +64,7 @@ public class AIController : MonoBehaviour
         SetEnemy();
         m_moveDirection = Vector3.zero;
         m_moveSpeed = Vector3.zero;
-        m_animatorController = transform.GetComponent<Animator>();
+        m_animatorController = transform.GetComponentInChildren<Animator>();
         m_isSideways = false;
     }
 

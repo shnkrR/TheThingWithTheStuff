@@ -461,7 +461,7 @@ GameObject:
   - 20: {fileID: 2008516}
   - 81: {fileID: 8105860}
   m_Layer: 0
-  m_Name: WingZeroCamera
+  m_Name: Camera
   m_TagString: MainCamera
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -750,9 +750,9 @@ GameObject:
   serializedVersion: 4
   m_Component:
   - 4: {fileID: 423248}
-  - 114: {fileID: 11422174}
   - 114: {fileID: 11439450}
   - 114: {fileID: 11416576}
+  - 114: {fileID: 11486914}
   m_Layer: 0
   m_Name: WingZero
   m_TagString: Untagged
@@ -2578,17 +2578,6 @@ MonoBehaviour:
   m_rangedDamage: 0
   m_MeleeWeapon: {fileID: 180722}
   m_RangeWeapon: {fileID: 155734}
---- !u!114 &11422174
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 185792}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d8b58e562643add41b793355f947e9e9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &11439450
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2606,6 +2595,22 @@ MonoBehaviour:
   m_knockBackTime: .25
   m_knockbackSpeed: 10
   m_meleeDistance: 5
+--- !u!114 &11486914
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 185792}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f682021f5e75e6244bc0304729d81aca, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_strafeDashBehaviour: .5
+  m_strafeDistance: 7
+  m_dashDistance: 5
+  m_reactionTime: 10
+  m_enemyTransform: {fileID: 0}
 --- !u!1001 &100100000
 Prefab:
   m_ObjectHideFlags: 1
