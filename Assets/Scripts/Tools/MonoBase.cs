@@ -9,6 +9,7 @@ public class MonoBase : MonoBehaviour
 
     public static System.Action<Object> _OnObjectHeld;
     public static System.Action<Object> _OnObjectReleased;
+    public static System.Action<Object> _OnObjectDown;
 
     private const float m_SwipeDetectDiff = 20.0f;
 
@@ -63,6 +64,13 @@ public class MonoBase : MonoBehaviour
                 _OnObjectHeld(ob);
         }
 
+        if (Input.GetMouseButtonDown(0))
+        {
+            Object ob = GetCanvasObjectAt(Input.mousePosition);
+            if (ob != null && _OnObjectDown != null)
+                _OnObjectDown(ob);
+        }
+
         if (Input.GetMouseButtonUp(0))
         {
             Object ob = GetCanvasObjectAt(Input.mousePosition);
@@ -88,12 +96,15 @@ public class MonoBase : MonoBehaviour
                 {
                     m_StartPositions[i] = touches[i].position;
                     m_EndPositions[i] = Vector3.zero;
+                    //Object ob = GetCanvasObjectAt(touches[i].position);
+                    if (ob != null && _OnObjectReleased != null)
+                        _OnObjectDown(ob);
                 }
 
                 if (touches[i].phase == TouchPhase.Ended)
                 {
                     m_EndPositions[i] = touches[i].position;
-                    Object ob = GetCanvasObjectAt(touches[i].position);
+                    //Object ob = GetCanvasObjectAt(touches[i].position);
                     if (ob != null && _OnObjectReleased != null)
                         _OnObjectReleased(ob);
                 }

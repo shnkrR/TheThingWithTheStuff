@@ -29,6 +29,7 @@ public class PlayerController : MonoBase
     private Vector3 m_PrevMoveDirection;
     private Vector3 m_moveDirection;
     private Vector3 m_moveSpeed;
+    private Vector3 m_LastInVoluntaryDir;
 
     private RobotBase m_robotBase;
 
@@ -37,6 +38,7 @@ public class PlayerController : MonoBase
     private Animator m_animatorController;
 
     private bool m_knockBack = false;
+    private bool m_MeleeAttackBtnPressed = false;
 
     private float m_TurnSpeed = 5.0f;
     private float m_CurrentIdleValue;
@@ -91,6 +93,8 @@ public class PlayerController : MonoBase
         m_playerCamera = transform.GetComponentInChildren<Camera>(); 
 
         _OnObjectHeld += OnObjectHeld;
+        _OnObjectReleased += OnObjectReleased;
+        _OnObjectDown += OnObjectDown;
 
         m_IdlePose = -1;
         m_CurrentIdleValue = 0;
@@ -108,6 +112,13 @@ public class PlayerController : MonoBase
 
         m_knockBack = false;
         m_knockbackStartTime = 0.0f;
+
+        m_playerCamera.transform.localPosition = Vector3.zero;
+        m_playerCamera.transform.LookAt(m_enemyTransform.position);
+        m_playerCamera.transform.position += (m_playerCamera.transform.forward * -1.5f);
+        m_playerCamera.transform.localPosition += new Vector3(0.0f, .75f, 0.0f);
+
+        m_MeleeAttackBtnPressed = false;
      }
 
     void SetPlayerStats()
@@ -131,8 +142,10 @@ public class PlayerController : MonoBase
     }
 
     #region Unity Functions
-    void Update()
+    protected override void Update()
     {
+        base.Update();
+
         HandleMovementInputs();
         HandleCombatInputs();
     }
@@ -145,6 +158,8 @@ public class PlayerController : MonoBase
     void OnDestroy()
     {
         _OnObjectHeld -= OnObjectHeld;
+        _OnObjectReleased -= OnObjectReleased;
+        _OnObjectDown -= OnObjectDown;
     }
 
     void LateUpdate()
@@ -152,14 +167,23 @@ public class PlayerController : MonoBase
         Vector3 prev = m_playerTransform.position;
         m_playerTransform.position += (m_moveSpeed * Time.deltaTime);
 
-        if (Vector3.Distance(Vector3.zero, transform.position) > World.WorldRadius)
+        if ((Vector3.Distance(Vector3.zero, transform.position) > World.WorldRadius))
         {
             float diff = Vector3.Distance(prev, m_playerTransform.position);
             m_playerTransform.position += (m_playerCamera.transform.forward * diff);
         }
 
         if (!m_knockBack)
-            m_playerTransform.LookAt(m_playerTransform.position + (m_moveSpeed));
+        {
+            if (m_animatorController.GetInteger("moveAttackIndex") == 0)
+            {
+                m_playerTransform.LookAt(m_playerTransform.position + (m_moveSpeed));
+            }
+            else
+            {
+                m_playerTransform.LookAt(m_enemyTransform);
+            }
+        }
         else
             m_playerTransform.LookAt(m_playerTransform.position - (m_moveSpeed));
 
@@ -167,6 +191,7 @@ public class PlayerController : MonoBase
         m_playerCamera.transform.LookAt(m_enemyTransform.position);
         m_playerCamera.transform.position += (m_playerCamera.transform.forward * -1.5f);
         m_playerCamera.transform.localPosition += new Vector3(0.0f, .75f, 0.0f);
+
 		
         if ((m_animatorController.GetInteger("moveAttackIndex") == 0) && m_animatorController.GetInteger("dir") == 0 && !m_knockBack)
             HandleDistanceTransitions();
@@ -188,6 +213,70 @@ public class PlayerController : MonoBase
                 m_dpadInput = 2;
             else if (go.name == "DPad_Right")
                 m_dpadInput = 3;
+            else if (go.name == "Button_Attack")
+            {
+                if (m_playerCombatState == Enums.CombatState.Ranged)
+                {
+                    m_playerTransform.LookAt(m_enemyTransform.position);
+                    m_animatorController.SetInteger("moveAttackIndex", 2);
+                }
+                else if (m_playerCombatState == Enums.CombatState.Melee)
+                    m_MeleeAttackBtnPressed = false;
+            }
+            else if (go.name == "Button_Block")
+                m_animatorController.SetInteger("moveAttackIndex", 4);
+        }
+    }
+
+    void OnObjectReleased(Object a_Object)
+    {
+        GameObject go = (GameObject)a_Object;
+
+        if (go != null)
+        {
+            if (go.name == "Button_Attack")
+            {
+                if (m_playerCombatState == Enums.CombatState.Ranged)
+                {
+                    m_animatorController.SetInteger("moveAttackIndex", 0);
+                }
+                else if (m_playerCombatState == Enums.CombatState.Melee)
+                {
+                    m_MeleeAttackBtnPressed = false;
+                }
+            }
+            else if (go.name == "Button_Block")
+                m_animatorController.SetInteger("moveAttackIndex", 0);
+        }
+    }
+
+    void OnObjectDown(Object a_Object)
+    {
+        GameObject go = (GameObject)a_Object;
+
+        if (go != null)
+        {
+            if (go.name == "Button_Attack")
+            {
+                if (m_playerCombatState == Enums.CombatState.Melee)
+                {
+                    if (m_TimesMeleeAttacked == 0 && ((Time.time - m_TimeSinceLastMeleeInput) > m_MeleeCoolDown))
+                    {
+                        m_TimesMeleeAttacked++;
+                        m_TimeSinceLastMeleeInput = Time.time;
+                        m_animatorController.SetInteger("moveAttackIndex", 1);
+                        m_LastMeleeAttackIndex = Random.Range(0, 3);
+                        m_animatorController.SetInteger("MeleeAttackIndex", m_LastMeleeAttackIndex);
+                        InvokeRepeating("TakeNextCombatInput", m_MeleeAnimData[m_LastMeleeAttackIndex].m_InputStartTime, (1.0f / 60.0f));
+                        m_playerTransform.LookAt(m_enemyTransform.position);
+                        Invoke("SendHit", m_MeleeAnimData[m_LastMeleeAttackIndex].m_HitTime);
+                    }
+                    else
+                    {
+                        m_MeleeAttackBtnPressed = true;
+                    }
+                }
+            }
         }
     }
     #endregion
@@ -237,6 +326,10 @@ public class PlayerController : MonoBase
     void Move(DpadDirections a_Direction)
     {
         Transform sourceTrans = m_playerCamera.transform;
+
+        if (a_Direction != DpadDirections.NONE && m_animatorController.GetInteger("moveAttackIndex") != 0)
+            return;
+
         switch (a_Direction)
         {
             case DpadDirections.FORWARD:
@@ -320,7 +413,14 @@ public class PlayerController : MonoBase
         if (m_animatorController.GetInteger("dir") != 0 || m_knockBack)
             return;
 
-
+        if (Input.GetKey(KeyCode.Space))
+        {
+            m_animatorController.SetInteger("moveAttackIndex", 4);
+        }
+        else if (Input.GetKeyUp(KeyCode.Space))
+        {
+            m_animatorController.SetInteger("moveAttackIndex", 0);
+        }
 
         if (Input.GetKeyUp(KeyCode.UpArrow))
         {
@@ -359,7 +459,6 @@ public class PlayerController : MonoBase
     {
         if ((Time.time - m_TimeSinceLastMeleeInput) > (m_MeleeAnimData[m_LastMeleeAttackIndex].m_InputExpireTime))
         {
-            Debug.LogError("Expired");
             m_TimesMeleeAttacked = 0;
             m_animatorController.SetInteger("moveAttackIndex", 0);
             m_animatorController.SetInteger("dir", 0);
@@ -371,11 +470,10 @@ public class PlayerController : MonoBase
         }
         else
         {
-            if (Input.GetKeyDown(KeyCode.UpArrow))
+            if (Input.GetKeyDown(KeyCode.UpArrow) || m_MeleeAttackBtnPressed)
             {
                 if (m_TimesMeleeAttacked < 4)
                 {
-                    Debug.Log("Input");
                     m_TimesMeleeAttacked++;
                     m_TimeSinceLastMeleeInput = Time.time;
                     m_animatorController.SetInteger("moveAttackIndex", 1);
@@ -403,17 +501,13 @@ public class PlayerController : MonoBase
 
     void SendHit()
     {
-        if (m_playerCombatState == Enums.CombatState.Melee && m_TimesMeleeAttacked == 4)
-        {
-            RecieveHit((m_TimesMeleeAttacked == 4));
-        }
+
     }
 
     void RecieveHit(bool knockBack)
     {
         if (m_playerCombatState == Enums.CombatState.Melee)
         {
-            Debug.Log("HIt");
             m_animatorController.SetInteger("moveAttackIndex", 3);
             m_animatorController.SetInteger("MeleeAttackIndex", -1);
             CancelInvoke("TakeNextCombatInput");
