@@ -1,0 +1,166 @@
+fileFormatVersion: 2
+guid: 8c72e2dcaf23bf1419f6d1fa0db7a93d
+timeCreated: 1458456659
+licenseType: Pro
+ModelImporter:
+  serializedVersion: 18
+  fileIDToRecycleName:
+    100000: AbstractNavData_Default
+    100002: BP_Sky_Shere_74
+    100004: Desert_Boulder_20
+    100006: Desert_CaveEntrance_01_9
+    100008: Desert_CliffRock_01_969
+    100010: Desert_CliffRock_02_972
+    100012: Desert_CliffRock_13
+    100014: Desert_ErosionMound_5
+    100016: Desert_FlatRock_11
+    100018: Desert_Mesa_01_6
+    100020: Desert_Mesa_2
+    100022: Desert_Plant_54
+    100024: Desert_Plant_55
+    100026: Desert_RockClump_01_975
+    100028: Desert_ScatteredRocks_8
+    100030: ErosionMound_990
+    100032: InstancedFoliageActor_0
+    100034: LevelMesh
+    100036: LightSource
+    100038: LightSource_pivot
+    100040: //RootNode
+    100042: PlayerStart
+    100044: WorldSettings_1
+    400000: AbstractNavData_Default
+    400002: BP_Sky_Shere_74
+    400004: Desert_Boulder_20
+    400006: Desert_CaveEntrance_01_9
+    400008: Desert_CliffRock_01_969
+    400010: Desert_CliffRock_02_972
+    400012: Desert_CliffRock_13
+    400014: Desert_ErosionMound_5
+    400016: Desert_FlatRock_11
+    400018: Desert_Mesa_01_6
+    400020: Desert_Mesa_2
+    400022: Desert_Plant_54
+    400024: Desert_Plant_55
+    400026: Desert_RockClump_01_975
+    400028: Desert_ScatteredRocks_8
+    400030: ErosionMound_990
+    400032: InstancedFoliageActor_0
+    400034: LevelMesh
+    400036: LightSource
+    400038: LightSource_pivot
+    400040: //RootNode
+    400042: PlayerStart
+    400044: WorldSettings_1
+    2300000: BP_Sky_Shere_74
+    2300002: Desert_Boulder_20
+    2300004: Desert_CaveEntrance_01_9
+    2300006: Desert_CliffRock_01_969
+    2300008: Desert_CliffRock_02_972
+    2300010: Desert_CliffRock_13
+    2300012: Desert_ErosionMound_5
+    2300014: Desert_FlatRock_11
+    2300016: Desert_Mesa_01_6
+    2300018: Desert_Mesa_2
+    2300020: Desert_Plant_54
+    2300022: Desert_Plant_55
+    2300024: Desert_RockClump_01_975
+    2300026: Desert_ScatteredRocks_8
+    2300028: ErosionMound_990
+    2300030: LevelMesh
+    3300000: BP_Sky_Shere_74
+    3300002: Desert_Boulder_20
+    3300004: Desert_CaveEntrance_01_9
+    3300006: Desert_CliffRock_01_969
+    3300008: Desert_CliffRock_02_972
+    3300010: Desert_CliffRock_13
+    3300012: Desert_ErosionMound_5
+    3300014: Desert_FlatRock_11
+    3300016: Desert_Mesa_01_6
+    3300018: Desert_Mesa_2
+    3300020: Desert_Plant_54
+    3300022: Desert_Plant_55
+    3300024: Desert_RockClump_01_975
+    3300026: Desert_ScatteredRocks_8
+    3300028: ErosionMound_990
+    3300030: LevelMesh
+    4300000: LevelMesh
+    4300002: BP_Sky_Shere_74
+    4300004: Desert_CliffRock_13
+    4300006: Desert_CliffRock_01_969
+    4300008: Desert_CliffRock_02_972
+    4300010: Desert_RockClump_01_975
+    4300012: Desert_ScatteredRocks_8
+    4300014: Desert_FlatRock_11
+    4300016: Desert_Boulder_20
+    4300018: Desert_ErosionMound_5
+    4300020: ErosionMound_990
+    4300022: Desert_Plant_54
+    4300024: Desert_Plant_55
+    4300026: Desert_Mesa_01_6
+    4300028: Desert_CaveEntrance_01_9
+    4300030: Desert_Mesa_2
+    9500000: //RootNode
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    optimizeGameObjects: 0
+    motionNodeName: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    animationCompression: 1
+    animationRotationError: .5
+    animationPositionError: .5
+    animationScaleError: .5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    importBlendShapes: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    splitTangentsAcrossUV: 1
+    normalImportMode: 0
+    tangentImportMode: 1
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    human: []
+    skeleton: []
+    armTwist: .5
+    foreArmTwist: .5
+    upperLegTwist: .5
+    legTwist: .5
+    armStretch: .0500000007
+    legStretch: .0500000007
+    feetSpacing: 0
+    rootMotionBoneName: 
+    hasTranslationDoF: 0
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 2
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

@@ -7,7 +7,7 @@ Material:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_Name: desert_SplatMap
-  m_Shader: {fileID: 4800000, guid: 59ddd7122a4751748b04d6a28d7ffbde, type: 3}
+  m_Shader: {fileID: 45, guid: 0000000000000000f000000000000000, type: 0}
   m_ShaderKeywords: 
   m_LightmapFlags: 5
   m_CustomRenderQueue: 2000
@@ -113,6 +113,13 @@ Material:
           m_Texture: {fileID: 2800000, guid: d5737385a09e8d547b3d57c65a2ec917, type: 3}
           m_Scale: {x: 20, y: 20}
           m_Offset: {x: 0, y: 0}
+      data:
+        first:
+          name: _SpecGlossMap
+        second:
+          m_Texture: {fileID: 0}
+          m_Scale: {x: 1, y: 1}
+          m_Offset: {x: 0, y: 0}
     m_Floats:
       data:
         first:
@@ -199,3 +206,7 @@ Material:
         first:
           name: _Color
         second: {r: .588235319, g: .588235319, b: .588235319, a: 1}
+      data:
+        first:
+          name: _SpecColor
+        second: {r: .200000003, g: .200000003, b: .200000003, a: 1}
