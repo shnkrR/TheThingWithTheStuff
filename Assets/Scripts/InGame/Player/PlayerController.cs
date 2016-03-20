@@ -8,6 +8,7 @@ public class PlayerController : MonoBase
     private float m_fMovementSpeed;
     private float m_sMovementSpeed;
     private float m_inertia;
+    private float m_DashSpeed;
     //
         
     //BASE COMBAT VARIABLES
@@ -18,6 +19,7 @@ public class PlayerController : MonoBase
     private float m_clipCapacity;
     private float m_refireRate;
     private float m_rangedDamage;
+	private float m_accuracy;
     //
 
     private Transform m_playerTransform;    
@@ -39,6 +41,7 @@ public class PlayerController : MonoBase
 
     private bool m_knockBack = false;
     private bool m_MeleeAttackBtnPressed = false;
+	private bool m_Dash = false;
 
     private float m_TurnSpeed = 5.0f;
     private float m_CurrentIdleValue;
@@ -46,15 +49,31 @@ public class PlayerController : MonoBase
     private float m_MaxTimeForInput = 0.5f;
     private float m_MeleeCoolDown = 1.0f;
     private float m_knockbackStartTime = 0.0f;
-
+	private float m_MaxTimeBetweenDashInputs = 0.2f;
+    private float m_LastDirInputTime;
+    private float m_DashTime = 0.5f;
     private int m_dpadInput;
     private int m_IdlePose;
     private int m_TimesMeleeAttacked;
+	private int m_TimesDirTapped;
     private int m_LastMeleeAttackIndex = -1;
 
+	private DpadDirections m_LastDirPressed;
     private List<MeleeAnimData> m_MeleeAnimData = new List<MeleeAnimData>();
 	private Enums.CombatState m_playerCombatState;
 
+	private CombatManager m_combatManager;
+
+    public RectTransform m_healthBar;
+    private float m_healthwidth;
+    private float m_MaxHealth;
+
+    public float health { get { return m_robotBase.m_health; } }
+
+    public bool IsBlock { get { return (m_animatorController.GetInteger("moveAttackIndex") == 4); } }
+
+    public ParticleSystem shieldPartice;
+    public ParticleSystem m_Impact;
 
     public enum DpadDirections
     {
@@ -76,6 +95,7 @@ public class PlayerController : MonoBase
 
         m_robotBase = transform.GetComponent<RobotBase>(); 
         m_weaponBase = transform.GetComponent<WeaponBase>();
+		m_combatManager = new CombatManager();
 
         SetPlayerStats();
         SetEnemy();
@@ -83,7 +103,8 @@ public class PlayerController : MonoBase
         m_moveDirection = Vector3.zero;
         m_moveSpeed = Vector3.zero;
 
-        m_animatorController = transform.GetComponentInChildren<Animator>();
+//        m_animatorController = transform.GetComponentInChildren<Animator>();
+		m_animatorController = transform.GetComponent<Animator>();
         m_animatorController.SetInteger("dir", 0);
         m_animatorController.SetInteger("moveAttackIndex", 0);
         m_animatorController.SetFloat("IdlePose", 0.0f);
@@ -101,15 +122,14 @@ public class PlayerController : MonoBase
         m_weaponBase.m_MeleeWeapon.SetActive(false);
         m_weaponBase.m_RangeWeapon.SetActive(false);
 
-        MeleeAnimData m = new MeleeAnimData(0.455f, 0.667f, 0.4f);
+        MeleeAnimData m = new MeleeAnimData(0.667f, 45, 67, 1.5f);
         m_MeleeAnimData.Add(m);
-        m = new MeleeAnimData(0.5f, 0.667f, 0.45f);
+        m = new MeleeAnimData(0.667f, 42, 65, 1.5f);
         m_MeleeAnimData.Add(m);
-        m = new MeleeAnimData(0.455f, 0.667f, 0.4f);
+        m = new MeleeAnimData(0.667f, 45, 58, 1.5f);
         m_MeleeAnimData.Add(m);
-        m = new MeleeAnimData(0.5f, 0.833f, 0.455f);
-        m_MeleeAnimData.Add(m);
-
+        m = new MeleeAnimData(0.833f, 41, 63, 1.5f);		
+		m_MeleeAnimData.Add(m);
         m_knockBack = false;
         m_knockbackStartTime = 0.0f;
 
@@ -119,6 +139,12 @@ public class PlayerController : MonoBase
         m_playerCamera.transform.localPosition += new Vector3(0.0f, .75f, 0.0f);
 
         m_MeleeAttackBtnPressed = false;
+
+        m_healthwidth = m_healthBar.sizeDelta.x;
+        m_MaxHealth = m_robotBase.m_health;
+
+        shieldPartice.Stop(true);
+        m_Impact.Stop(true);
      }
 
     void SetPlayerStats()
@@ -132,8 +158,10 @@ public class PlayerController : MonoBase
         m_meleeDamage = m_weaponBase.m_meleeDamage;
         m_refireRate = m_weaponBase.m_refireRate;
         m_rangedDamage = m_weaponBase.m_rangedDamage;
+		m_accuracy = m_weaponBase.m_accuracy;
 		m_playerCombatState = Enums.CombatState.Melee;
 		
+		m_DashSpeed = m_robotBase.m_dashspeed;
     }
 
     void SetEnemy()
@@ -146,8 +174,23 @@ public class PlayerController : MonoBase
     {
         base.Update();
 
-        HandleMovementInputs();
-        HandleCombatInputs();
+		if (!m_Dash)
+        {
+            HandleMovementInputs();
+            HandleCombatInputs();
+        }
+        else
+        {
+            Move(m_LastDirPressed);
+        }
+
+        float healthNormalized = m_robotBase.m_health / m_MaxHealth;
+        float width = healthNormalized * m_healthwidth;
+        Rect rect = m_healthBar.rect;
+        rect.width = width;
+        m_healthBar.sizeDelta = new Vector2(width, m_healthBar.sizeDelta.y);
+
+        m_robotBase.m_health = Mathf.Clamp(m_robotBase.m_health, 0.0f, m_MaxHealth);
     }
 
     void FixedUpdate()
@@ -162,10 +205,15 @@ public class PlayerController : MonoBase
         _OnObjectDown -= OnObjectDown;
     }
 
+	private bool m_DirChangeAbrupt = false;
     void LateUpdate()
     {
         Vector3 prev = m_playerTransform.position;
-        m_playerTransform.position += (m_moveSpeed * Time.deltaTime);
+
+        if (!m_DirChangeAbrupt)
+        {
+            m_playerTransform.position += (m_moveSpeed * Time.deltaTime);
+        }
 
         if ((Vector3.Distance(Vector3.zero, transform.position) > World.WorldRadius))
         {
@@ -177,11 +225,27 @@ public class PlayerController : MonoBase
         {
             if (m_animatorController.GetInteger("moveAttackIndex") == 0)
             {
-                m_playerTransform.LookAt(m_playerTransform.position + (m_moveSpeed));
+                if (m_DirChangeAbrupt)
+                {
+                    m_DirChangeAbrupt = false;
+                    m_inertia = m_robotBase.m_inertia;
+                    m_moveSpeed = Vector3.zero;
+                }
+
+                if (!m_Dash)
+                    m_playerTransform.LookAt(m_playerTransform.position + (m_moveSpeed));
+                else
+                {
+                    m_playerTransform.eulerAngles = m_playerCamera.transform.eulerAngles;
+                }
             }
             else
             {
                 m_playerTransform.LookAt(m_enemyTransform);
+                m_moveSpeed = m_playerTransform.forward;
+                m_DirChangeAbrupt = true;
+                m_inertia = 1.0f;
+                //Debug.Log(m_playerTransform);
             }
         }
         else
@@ -203,6 +267,8 @@ public class PlayerController : MonoBase
     {
         GameObject go = (GameObject)a_Object;
 
+        if (m_Dash)
+            return;
         if (go != null)
         {
             if (go.name == "DPad_Up")
@@ -224,7 +290,12 @@ public class PlayerController : MonoBase
                     m_MeleeAttackBtnPressed = false;
             }
             else if (go.name == "Button_Block")
+            {
                 m_animatorController.SetInteger("moveAttackIndex", 4);
+
+                if (!shieldPartice.isPlaying)
+                    shieldPartice.Play(true);
+            }
         }
     }
 
@@ -232,8 +303,91 @@ public class PlayerController : MonoBase
     {
         GameObject go = (GameObject)a_Object;
 
+        if (m_Dash)
+            return;
         if (go != null)
         {
+			if (go.name == "DPad_Up")
+            {
+                if (m_TimesDirTapped == 0)
+                    m_LastDirPressed = DpadDirections.FORWARD;
+
+                if (m_LastDirPressed == DpadDirections.FORWARD && ((Time.time - m_LastDirInputTime) < m_MaxTimeBetweenDashInputs))
+                {
+                    m_TimesDirTapped++;
+                    m_LastDirPressed = DpadDirections.FORWARD;
+
+                    if (m_TimesDirTapped == 4)
+                        m_Dash = true;
+                }
+                else
+                {
+                    m_LastDirPressed = DpadDirections.NONE;
+                    m_TimesDirTapped = 0;
+                    m_Dash = false;
+                }
+            }
+            else if (go.name == "DPad_Down")
+            {
+                if (m_TimesDirTapped == 0)
+                    m_LastDirPressed = DpadDirections.BACK;
+
+                if (m_LastDirPressed == DpadDirections.BACK && ((Time.time - m_LastDirInputTime) < m_MaxTimeBetweenDashInputs))
+                {
+                    m_TimesDirTapped++;
+                    m_LastDirPressed = DpadDirections.BACK;
+
+                    if (m_TimesDirTapped == 4)
+                        m_Dash = true;
+                }
+                else
+                {
+                    m_LastDirPressed = DpadDirections.NONE;
+                    m_TimesDirTapped = 0;
+                    m_Dash = false;
+                }
+            }
+            else if (go.name == "DPad_Left")
+            {
+                if (m_TimesDirTapped == 0)
+                    m_LastDirPressed = DpadDirections.LEFT;
+
+                if (m_LastDirPressed == DpadDirections.LEFT && ((Time.time - m_LastDirInputTime) < m_MaxTimeBetweenDashInputs))
+                {
+                    m_TimesDirTapped++;
+                    m_LastDirPressed = DpadDirections.LEFT;
+
+                    if (m_TimesDirTapped == 4)
+                        m_Dash = true;
+                }
+                else
+                {
+                    m_LastDirPressed = DpadDirections.NONE;
+                    m_TimesDirTapped = 0;
+                    m_Dash = false;
+                }
+            }
+            else if (go.name == "DPad_Right")
+            {
+                if (m_TimesDirTapped == 0)
+                    m_LastDirPressed = DpadDirections.RIGHT;
+
+                if (m_LastDirPressed == DpadDirections.RIGHT && ((Time.time - m_LastDirInputTime) < m_MaxTimeBetweenDashInputs))
+                {
+                    m_TimesDirTapped++;
+                    m_LastDirPressed = DpadDirections.RIGHT;
+
+                    if (m_TimesDirTapped == 4)
+                        m_Dash = true;
+                }
+                else
+                {
+                    m_LastDirPressed = DpadDirections.NONE;
+                    m_TimesDirTapped = 0;
+                    m_Dash = false;
+                }
+            }
+            else
             if (go.name == "Button_Attack")
             {
                 if (m_playerCombatState == Enums.CombatState.Ranged)
@@ -246,7 +400,14 @@ public class PlayerController : MonoBase
                 }
             }
             else if (go.name == "Button_Block")
+            {
                 m_animatorController.SetInteger("moveAttackIndex", 0);
+                shieldPartice.Stop(true);
+            }
+            if(m_Dash)
+            {
+                Invoke("EndDash", m_DashTime);
+            }
         }
     }
 
@@ -254,8 +415,31 @@ public class PlayerController : MonoBase
     {
         GameObject go = (GameObject)a_Object;
 
+        if (m_Dash)
+            return;
         if (go != null)
         {
+            if (go.name == "DPad_Up")
+            {
+                m_LastDirInputTime = Time.time;
+                m_dpadInput = 1;                
+            }
+            else if (go.name == "DPad_Down")
+            {
+                m_LastDirInputTime = Time.time;
+                m_dpadInput = -1;
+            }
+            else if (go.name == "DPad_Left")
+            {
+                m_LastDirInputTime = Time.time;
+                m_dpadInput = 2;
+            }
+            else if (go.name == "DPad_Right")
+            {
+                m_LastDirInputTime = Time.time;
+                m_dpadInput = 3;
+            }
+            else
             if (go.name == "Button_Attack")
             {
                 if (m_playerCombatState == Enums.CombatState.Melee)
@@ -322,6 +506,16 @@ public class PlayerController : MonoBase
                 m_knockBack = false;
         }
     }
+    void EndDash()
+    {
+        m_LastDirPressed = DpadDirections.NONE;
+        m_TimesDirTapped = 0;
+        m_Dash = false;
+
+        m_moveSpeed = m_playerTransform.forward;
+        m_DirChangeAbrupt = true;
+        m_inertia = 1.0f;
+    }
     
     void Move(DpadDirections a_Direction)
     {
@@ -335,7 +529,7 @@ public class PlayerController : MonoBase
             case DpadDirections.FORWARD:
                 m_animatorController.SetInteger("dir", 1);
                 m_moveDirection = Vector3.Lerp(m_moveDirection, sourceTrans.forward, Time.deltaTime * m_TurnSpeed);
-                m_moveSpeed = ((m_moveDirection * m_fMovementSpeed));
+                m_moveSpeed = ((m_moveDirection * (m_fMovementSpeed + (m_Dash ? m_DashSpeed : 0) )));
                 
                 if (m_enemyTransform != null && Vector3.Distance(m_enemyTransform.position, m_playerTransform.position) < (m_meleeDistance))
                 {
@@ -345,27 +539,28 @@ public class PlayerController : MonoBase
                 break;
 
             case DpadDirections.LEFT:
-                m_animatorController.SetInteger("dir", 2);
+                m_animatorController.SetInteger("dir", (m_Dash) ? 2 : 1);
                 m_moveDirection = Vector3.Lerp(m_moveDirection, -sourceTrans.right, Time.deltaTime * m_TurnSpeed);
-                m_moveSpeed = ((m_moveDirection * m_sMovementSpeed));
+                m_moveSpeed = ((m_moveDirection * (m_sMovementSpeed + (m_Dash ? m_DashSpeed : 0) )));
                 break;
 
             case DpadDirections.RIGHT:
-                m_animatorController.SetInteger("dir", 3);
+                m_animatorController.SetInteger("dir", (m_Dash) ? 3 : 1);
                 m_moveDirection = Vector3.Lerp(m_moveDirection, sourceTrans.right, Time.deltaTime * m_TurnSpeed);
-                m_moveSpeed = ((m_moveDirection * m_sMovementSpeed));
+                m_moveSpeed = ((m_moveDirection * (m_sMovementSpeed + (m_Dash ? m_DashSpeed : 0) )));
                 break;
 
             case DpadDirections.BACK:
-                m_animatorController.SetInteger("dir", -1);
+                m_animatorController.SetInteger("dir", (m_Dash) ? -1 : 1);
                 m_moveDirection = Vector3.Lerp(m_moveDirection, -sourceTrans.forward, Time.deltaTime * m_TurnSpeed);
-                m_moveSpeed = ((m_moveDirection * m_fMovementSpeed));
+                m_moveSpeed = ((m_moveDirection * (m_fMovementSpeed + (m_Dash ? m_DashSpeed : 0) )));
                 break;
 
             case DpadDirections.NONE:
                 m_dpadInput=0;
                 m_animatorController.SetInteger("dir", 0);
-                m_moveSpeed = Vector3.Lerp(m_moveSpeed, Vector3.zero, Mathf.Clamp(m_inertia, 0f, 1.0f));
+				if (!m_DirChangeAbrupt)
+					m_moveSpeed = Vector3.Lerp(m_moveSpeed, Vector3.zero, Mathf.Clamp(m_inertia, 0f, 1.0f));
                 break;
         }
     }
@@ -426,7 +621,8 @@ public class PlayerController : MonoBase
         {
 			if (m_playerCombatState == Enums.CombatState.Ranged) 
 			{
-				m_animatorController.SetInteger("moveAttackIndex",0);
+				m_animatorController.CrossFade ("range_attack",0f);
+				m_animatorController.SetInteger("moveAttackIndex",0);	
 			}
     	}
 
@@ -453,10 +649,16 @@ public class PlayerController : MonoBase
                 Invoke("SendHit", m_MeleeAnimData[m_LastMeleeAttackIndex].m_HitTime);
             }
         }
+
+
+
 	}
 
     void TakeNextCombatInput()
     {
+        if (m_LastMeleeAttackIndex == -1)
+            return;
+
         if ((Time.time - m_TimeSinceLastMeleeInput) > (m_MeleeAnimData[m_LastMeleeAttackIndex].m_InputExpireTime))
         {
             m_TimesMeleeAttacked = 0;
@@ -501,24 +703,34 @@ public class PlayerController : MonoBase
 
     void SendHit()
     {
+        float damage = m_meleeDamage;
 
+        if (m_enemyTransform.GetComponent<AIController>().IsBlock)
+            damage /= 4.0f;
+
+        m_enemyTransform.GetComponent<RobotBase>().m_health = m_combatManager.DealMeleeDamage(m_enemyTransform.GetComponent<RobotBase>().m_health, damage);
+        m_enemyTransform.GetComponent<AIController>().RecieveHit((m_TimesMeleeAttacked == 4));
     }
 
-    void RecieveHit(bool knockBack)
+    public void RecieveHit(bool knockBack)
     {
         if (m_playerCombatState == Enums.CombatState.Melee)
         {
+            m_animatorController.SetInteger("moveAttackIndex", 0);
             m_animatorController.SetInteger("moveAttackIndex", 3);
             m_animatorController.SetInteger("MeleeAttackIndex", -1);
             CancelInvoke("TakeNextCombatInput");
+            CancelInvoke("Recover");
             Invoke("Recover", 0.667f);
             m_knockBack = knockBack;
             m_knockbackStartTime = Time.time;
+            m_Impact.Play(true);
         }
     }
 
     void Recover()
     {
+        m_Impact.Stop(true);
         m_TimesMeleeAttacked = 0;
         m_animatorController.SetInteger("moveAttackIndex", 0);
         m_animatorController.SetInteger("dir", 0);
@@ -526,5 +738,49 @@ public class PlayerController : MonoBase
         m_LastMeleeAttackIndex = -1;
     }
     #endregion
+
+
+
+	#region ANIMATION EVENTS
+	public void DoRangedDamage()
+	{
+        float damage = m_rangedDamage;
+
+        if (m_enemyTransform.GetComponent<AIController>().IsBlock)
+            damage /= 4.0f;
+
+		ShowRangedVFX();
+        m_enemyTransform.GetComponent<AIController>().m_Impact.Play(true);
+        m_enemyTransform.GetComponent<RobotBase>().m_health = m_combatManager.DealRangedDamage(m_enemyTransform.GetComponent<RobotBase>().m_health, m_accuracy, damage);
+        Invoke("StopParticle", 0.5f);
+	}
+
+    void StopParticle()
+    {
+        m_enemyTransform.GetComponent<AIController>().m_Impact.Stop(true);
+    }
+
+	public void ShowRangedVFX()
+	{
+		GameObject a_bullet = GameObject.Instantiate (m_weaponBase.m_rangedBullet);
+		a_bullet.SetActive(true);
+		a_bullet.transform.position = m_weaponBase.m_rangedBullet.transform.position;
+		a_bullet.transform.rotation = m_weaponBase.m_rangedBullet.transform.rotation;
+		a_bullet.GetComponent<Rigidbody>().AddForce((m_enemyTransform.position+new Vector3(0,1f,0) - a_bullet.transform.position) *1000f);
+		StartCoroutine(DestroyGameObject(a_bullet, 1f));
+		
+
+	}
+
+	#endregion
+
+
+
+	IEnumerator DestroyGameObject(GameObject _obj, float _delayTime)
+	{
+		yield return new WaitForSeconds(_delayTime);
+		Destroy(_obj);
+	}
+
 
 }

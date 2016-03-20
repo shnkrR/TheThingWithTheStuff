@@ -42,6 +42,10 @@ public class BattleCamera : MonoBase
         transform.position += (transform.forward * _LocalOffset.z);
         transform.position += new Vector3(_LocalOffset.x, _LocalOffset.y, 0.0f);
 
+        //float off = 3.0f;
+
+        transform.LookAt(m_AITransform/* + (m_AITransform.right * 3.0f)*/);
+
         float dist = Vector3.Distance(transform.position, m_PlayerTransform.position);
         if (dist < Mathf.Abs(_LocalOffset.z))
         {
